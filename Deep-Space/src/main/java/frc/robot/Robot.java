@@ -126,16 +126,31 @@ public class Robot extends TimedRobot {
     double driveY = input.driver.getY();
     drive.setSpeed(driverX, driveY);
     drive.move();
-
+    // If linearslider is manual 
     if (input.linearSliderManual) {
-      // L
+      // Set the linearSlider back to preset state
       if (input.driver.getRawButton(1)) {
-        input.setLinearSliderManual();
+        input.setLinearSliderManualState(false);
+      }
+      // Manual raise the linear slider up 
+      if (input.driver.getRawButton(3)){
+        // TODO: find out what the speed should be
+        slider.setSpeed(.3);
+        slider.move();
+      }
+      if (input.driver.getRawButton(4)){
+        slider.setSpeed(-.3);
+        slider.move(); 
       }
     } else if (!input.linearSliderManual) {
-      if (input.driver.getRawButton(3)) {
-
-      }
+      // The linear slider is in a preset state 
+      // TODO: write the presets and the math to do the preset based on the camera
+    }
+    if (input.driver.getRawButton(2)){
+      pnumatics.setFoward();
+    }
+    if (input.driver.getRawButton(5)){
+      pnumatics.setReversed();
     }
   }
 

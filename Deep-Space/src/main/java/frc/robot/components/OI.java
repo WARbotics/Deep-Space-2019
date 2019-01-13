@@ -11,8 +11,8 @@ public class OI{
     public OI(Joystick driver){
         this.driver = driver;
     }
-    public void setLinearSliderManual(){
-        this.linearSliderManual = true;
+    public void setLinearSliderManualState(boolean state ){
+        this.linearSliderManual = state;
     }
     
 }
