@@ -5,29 +5,28 @@ import edu.wpi.first.wpilibj.SpeedControllerGroup;
 
 public class Drivetrain {
     // TODO: Check that VictorSP port number are corret
-    VictorSP frontRightMotor;
-    VictorSP frontLeftMotor;
-    VictorSP backLeftMotor;
-    VictorSP backRightMotor;
+    public VictorSP frontLeftMotor = new VictorSP(0);
+    public VictorSP frontRightMotor = new VictorSP(1);
+    public VictorSP backLeftMotor = new VictorSP(2);
+    public VictorSP backRightMotor = new VictorSP(3);
 
-    SpeedControllerGroup m_Right;
-    SpeedControllerGroup m_Left;
-    DifferentialDrive m_Drive = new DifferentialDrive(m_Left, m_Right);
+    public SpeedControllerGroup m_Right = new SpeedControllerGroup(frontRightMotor, backRightMotor);
+    public SpeedControllerGroup m_Left = new SpeedControllerGroup(frontLeftMotor, backLeftMotor);
+    public DifferentialDrive m_Drive = new DifferentialDrive(m_Left, m_Right);
     
     public double fowardSpeed; 
     public double rotationSpeed;
-
-    public Drivetrain(VictorSP frontLeftMotor, VictorSP frontRightMotor, VictorSP backLeftMotor, VictorSP backRightMotor){
-        this.m_Right = new SpeedControllerGroup(frontRightMotor, backRightMotor);
-        this.m_Left = new SpeedControllerGroup(frontLeftMotor, backLeftMotor); 
-    }
+    
+    public boolean isMoving = (fowardSpeed == 0) && (rotationSpeed== 0); 
 
     public void setSpeed(double foward, double rotation){
-        this.fowardSpeed = foward; 
-        this.rotationSpeed = rotation;
+        fowardSpeed = foward; 
+        rotationSpeed = rotation;
     }
-
+    public boolean isMoving(){
+        return isMoving;
+    }
     public void move(){
-        m_Drive.arcadeDrive(this.fowardSpeed, this.rotationSpeed);
+        m_Drive.arcadeDrive(fowardSpeed, rotationSpeed);
     }
 }

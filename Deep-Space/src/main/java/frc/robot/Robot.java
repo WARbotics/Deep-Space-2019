@@ -12,11 +12,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.components.Drivetrain;
 import frc.robot.components.OI;
-import edu.wpi.first.wpilibj.VictorSP;
-import edu.wpi.first.wpilibj.Joystick;
 import frc.robot.components.Pnumatics;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import frc.robot.components.LinearSlider;
+import frc.robot.Test;
+
 
 /**
  * TODO:
@@ -29,6 +27,10 @@ import frc.robot.components.LinearSlider;
  * - Create safety flags 
  * - Multithreading 
  * - The shooting pnumatics is just going to be on for ready to fire at an angle or off to collect 
+ * - Logger 
+ * - Test cases 
+ * - Linear slider state machine 
+ * - Maybe change the shuffle board color based on the alliance side
  * - 
  */
 /**
@@ -41,16 +43,13 @@ import frc.robot.components.LinearSlider;
 public class Robot extends TimedRobot {
   Drivetrain drive;
   OI input;
-  Pnumatics pnumatics;
-  LinearSlider slider;
+  Pnumatics peak;
+  Test unitTest = new Test();
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  VictorSP frontLeftMotor;
-  VictorSP frontRightMotor;
-  VictorSP backLeftMotor;
-  VictorSP backRightMotor;
+
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -58,10 +57,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    drive = new Drivetrain(new VictorSP(1), new VictorSP(2), new VictorSP(3), new VictorSP(4));
-    input = new OI(new Joystick(1));
-    pnumatics = new Pnumatics(new DoubleSolenoid(0, 1));
-    slider = new LinearSlider(new VictorSP(5));
+    drive = new Drivetrain();
+    input = new OI();
+    peak = new Pnumatics();
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
@@ -122,42 +120,25 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     // Double check to see if the x and y are corret with the joystick
     // Get the correct button values
-    double driverX = input.driver.getX();
-    double driveY = input.driver.getY();
-    drive.setSpeed(driverX, driveY);
-    drive.move();
+    double driveX  = input.driver.getRawAxis(1);
+    double driveZrotation = input.driver.getRawAxis(0);
+    drive.m_Drive.arcadeDrive(driveX, driveZrotation);
     // If linearslider is manual 
-    if (input.linearSliderManual) {
-      // Set the linearSlider back to preset state
-      if (input.driver.getRawButton(1)) {
-        input.setLinearSliderManualState(false);
-      }
-      // Manual raise the linear slider up 
-      if (input.driver.getRawButton(3)){
-        // TODO: find out what the speed should be
-        slider.setSpeed(.3);
-        slider.move();
-      }
-      if (input.driver.getRawButton(4)){
-        slider.setSpeed(-.3);
-        slider.move(); 
-      }
-    } else if (!input.linearSliderManual) {
-      // The linear slider is in a preset state 
-      // TODO: write the presets and the math to do the preset based on the camera
+    if (input.driver.getRawButton(1)){
+      peak.setFoward();
     }
     if (input.driver.getRawButton(2)){
-      pnumatics.setFoward();
-    }
-    if (input.driver.getRawButton(5)){
-      pnumatics.setReversed();
+      peak.setReversed();
     }
   }
-
   /**
    * This function is called periodically during test mode.
    */
   @Override
   public void testPeriodic() {
+    if(!unitTest.isTestFinished){
+      // Runs the test cases 
+      unitTest.testCompressor();
+    }
   }
 }

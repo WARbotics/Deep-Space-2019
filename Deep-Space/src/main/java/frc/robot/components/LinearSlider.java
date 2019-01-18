@@ -2,6 +2,11 @@ package frc.robot.components;
 import  edu.wpi.first.wpilibj.VictorSP;
 
 public class LinearSlider{
+    /*
+     The state of the linear could be done by if the linear slider is the moving up and down via 
+     constant rate then that means that we can do the math and have a varible that is being added 
+     and when it hits a value it means it is at the top and will have flag. idk 
+    */
     VictorSP motor; 
     double speed;
     String state; 
