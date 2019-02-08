@@ -26,20 +26,20 @@ import frc.robot.Test;
  * - learn about network tables
  * - Create safety flags 
  * - Multithreading 
- * - The shooting pnumatics is just going to be on for ready to fire at an angle or off to collect 
+ * - The shooting pneumatics is just going to be on for ready to fire at an angle or off to collect 
  * - Logger 
  * - Test cases 
  * - Linear slider state machine 
  * - Maybe change the shuffle board color based on the alliance side
  * - 
- */
+ **/
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the TimedRobot
  * documentation. If you change the name of this class or the package after
  * creating this project, you must also update the build.gradle file in the
  * project.
- */
+ **/
 public class Robot extends TimedRobot {
   Drivetrain drive;
   OI input;
