@@ -6,9 +6,9 @@ import edu.wpi.first.wpilibj.SpeedControllerGroup;
 public class Drivetrain {
     // TODO: Check that VictorSP port number are corret
     public VictorSP frontLeftMotor = new VictorSP(0);
-    public VictorSP frontRightMotor = new VictorSP(1);
-    public VictorSP backLeftMotor = new VictorSP(2);
-    public VictorSP backRightMotor = new VictorSP(3);
+    public VictorSP frontRightMotor = new VictorSP(14);
+    public VictorSP backLeftMotor = new VictorSP(0);
+    public VictorSP backRightMotor = new VictorSP(13);
 
     public SpeedControllerGroup m_Right = new SpeedControllerGroup(frontRightMotor, backRightMotor);
     public SpeedControllerGroup m_Left = new SpeedControllerGroup(frontLeftMotor, backLeftMotor);
