@@ -20,24 +20,6 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import frc.robot.components.Shooter;
 
 /**
-<<<<<<< Updated upstream
- * TODO:
- * - Pathfinder placed into the auto command
- * - Check to see if the all the ports are correct 
- * - Camera Server 
- * - Vision Processing 
- * - Display data onto shuffle board 
- * - learn about network tables
- * - Create safety flags 
- * - Multithreading 
- * - The shooting pneumatics is just going to be on for ready to fire at an angle or off to collect 
- * - Logger 
- * - Test cases 
- * - Linear slider state machine 
- * - Maybe change the shuffle board color based on the alliance side
- * - 
- **/
-=======
  * MOTOR CONTROLLERS
  * [] Accelamentor (speed)
  * 4 drive train Victor SP
@@ -58,7 +40,6 @@ import frc.robot.components.Shooter;
  * [] Linear slider state machine 
  * [] Maybe change the shuffle board color based on the alliance side
  */
->>>>>>> Stashed changes
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the TimedRobot
@@ -89,6 +70,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     drive = new Drivetrain();
+    drive.setMotorsInverted();
     input = new OI();
     peak = new Pnumatics();
     // DataTables 
