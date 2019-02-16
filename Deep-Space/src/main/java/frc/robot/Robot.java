@@ -14,9 +14,13 @@ import frc.robot.components.Drivetrain;
 import frc.robot.components.OI;
 import frc.robot.components.Pnumatics;
 import frc.robot.Test;
-
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import frc.robot.components.Shooter;
 
 /**
+<<<<<<< Updated upstream
  * TODO:
  * - Pathfinder placed into the auto command
  * - Check to see if the all the ports are correct 
@@ -33,6 +37,28 @@ import frc.robot.Test;
  * - Maybe change the shuffle board color based on the alliance side
  * - 
  **/
+=======
+ * MOTOR CONTROLLERS
+ * [] Accelamentor (speed)
+ * 4 drive train Victor SP
+ * 2 Victor SP for shooter 
+ * 1 Victor SP for linear slider 
+ * TODO
+ * []Pathfinder placed into the auto command
+ * []Check to see if the all the ports are correct 
+ * [] Camera Server 
+ * [] Vision Processing 
+ * [] Display data onto shuffle board 
+ * [] learn about network tables
+ * [] Create safety flags 
+ * [] Multithreading 
+ * [] The shooting pnumatics is just going to be on for ready to fire at an angle or off to collect 
+ * [] Logger 
+ * [] Test cases 
+ * [] Linear slider state machine 
+ * [] Maybe change the shuffle board color based on the alliance side
+ */
+>>>>>>> Stashed changes
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the TimedRobot
@@ -43,8 +69,13 @@ import frc.robot.Test;
 public class Robot extends TimedRobot {
   Drivetrain drive;
   OI input;
-  Pnumatics peak;
+  Pnumatics peak;  
   Test unitTest = new Test();
+  NetworkTableInstance defaultTableInit; 
+  NetworkTableInstance visionTableInit;
+  NetworkTable visionTable;
+  NetworkTable defaultTable;
+  NetworkTableEntry testEntry;
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
@@ -60,6 +91,15 @@ public class Robot extends TimedRobot {
     drive = new Drivetrain();
     input = new OI();
     peak = new Pnumatics();
+    // DataTables 
+    //  Java side will hold the datatable server becuase it is on the roborio
+    defaultTableInit = NetworkTableInstance.getDefault();
+    visionTableInit = NetworkTableInstance.create(); 
+    defaultTable = defaultTableInit.getTable("datatables");
+    visionTable = visionTableInit.getTable("vision");
+    
+    defaultTableInit.startClientTeam(6925);
+    visionTableInit.startClientTeam(6925);
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
@@ -120,9 +160,10 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     // Double check to see if the x and y are corret with the joystick
     // Get the correct button values
-    double driveX  = input.driver.getRawAxis(1);
-    double driveZrotation = input.driver.getRawAxis(0);
-    drive.m_Drive.arcadeDrive(driveX, driveZrotation);
+    double driveY  = input.driver.getRawAxis(1);
+    double driveX = input.driver.getRawAxis(0);
+    drive.m_Drive.arcadeDrive(driveY*.80, driveX*.80);
+    
     // If linearslider is manual 
     if (input.driver.getRawButton(1)){
       peak.setFoward();
@@ -130,6 +171,7 @@ public class Robot extends TimedRobot {
     if (input.driver.getRawButton(2)){
       peak.setReversed();
     }
+
   }
   /**
    * This function is called periodically during test mode.
