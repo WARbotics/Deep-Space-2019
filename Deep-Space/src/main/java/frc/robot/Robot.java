@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -17,7 +18,9 @@ import frc.robot.Test;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import frc.robot.common.ButtonDebouncer;
 import frc.robot.components.Shooter;
+import frc.robot.components.LinearSlider;
 
 /**
  * MOTOR CONTROLLERS
@@ -26,8 +29,7 @@ import frc.robot.components.Shooter;
  * 2 Victor SP for shooter 
  * 1 Victor SP for linear slider 
  * TODO
- * []Pathfinder placed into the auto command
- * []Check to see if the all the ports are correct 
+ * [] Pathfinder placed into the auto command
  * [] Camera Server 
  * [] Vision Processing 
  * [] Display data onto shuffle board 
@@ -37,7 +39,6 @@ import frc.robot.components.Shooter;
  * [] The shooting pnumatics is just going to be on for ready to fire at an angle or off to collect 
  * [] Logger 
  * [] Test cases 
- * [] Linear slider state machine 
  * [] Maybe change the shuffle board color based on the alliance side
  */
 /**
@@ -51,7 +52,16 @@ public class Robot extends TimedRobot {
   Drivetrain drive;
   OI input;
   Pnumatics peak;  
+  Pnumatics shooterPosition;
   Test unitTest = new Test();
+  LinearSlider slider; 
+  Shooter ballShooter; 
+  ButtonDebouncer peakButtonOpen; 
+  ButtonDebouncer peakButtonClose;
+  ButtonDebouncer sliderButtonRaise;
+  ButtonDebouncer sliderButtonLower;
+  ButtonDebouncer shoot;
+  ButtonDebouncer intake;
   NetworkTableInstance defaultTableInit; 
   NetworkTableInstance visionTableInit;
   NetworkTable visionTable;
@@ -73,15 +83,26 @@ public class Robot extends TimedRobot {
     drive.setMotorsInverted();
     input = new OI();
     peak = new Pnumatics();
+    shooterPosition = new Pnumatics();
+    slider = new LinearSlider();
+    ballShooter = new Shooter();
     // DataTables 
     //  Java side will hold the datatable server becuase it is on the roborio
     defaultTableInit = NetworkTableInstance.getDefault();
     visionTableInit = NetworkTableInstance.create(); 
     defaultTable = defaultTableInit.getTable("datatables");
     visionTable = visionTableInit.getTable("vision");
-    
     defaultTableInit.startClientTeam(6925);
     visionTableInit.startClientTeam(6925);
+    
+    // Debouncer 
+    peakButtonOpen = new ButtonDebouncer(input.driver,1, .5);
+    peakButtonClose = new ButtonDebouncer(input.driver, 2, .5);
+    sliderButtonRaise = new ButtonDebouncer(input.driver, 3, .5);
+    sliderButtonLower = new ButtonDebouncer(input.driver, 4, .5);
+    shoot = new ButtonDebouncer(input.driver, 5, .5);
+    intake = new ButtonDebouncer(input.driver, 6, .5);
+
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
@@ -98,6 +119,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    SmartDashboard.putNumber("Linear Slider Height", slider.getHeight());
+    SmartDashboard.putBoolean("Linear Slider Raising", slider.isRaising());
+    SmartDashboard.putBoolean("Peak Open", peak.isOpen());
+    SmartDashboard.putBoolean("Shooter Position down", shooterPosition.isOpen());
   }
 
   /**
@@ -146,12 +171,46 @@ public class Robot extends TimedRobot {
     double driveX = input.driver.getRawAxis(0);
     drive.m_Drive.arcadeDrive(driveY*.80, driveX*.80);
     
-    // If linearslider is manual 
     if (input.driver.getRawButton(1)){
-      peak.setFoward();
+      if(peakButtonOpen.isReady()){
+        peak.setFoward();
+      }
     }
     if (input.driver.getRawButton(2)){
-      peak.setReversed();
+      if(peakButtonClose.isReady()){
+        peak.setReversed();
+      }
+    }
+    if (input.driver.getRawButton(3)){
+      if(sliderButtonRaise.isReady()){
+        slider.raise(); 
+      }
+    }
+    if (input.driver.getRawButton(4)){
+      if(sliderButtonLower.isReady()){
+        slider.lower();
+      }
+    }
+    if (input.driver.getRawButton(5)){
+      if(shoot.isReady()){
+        if(shooterPosition.m_solenoid.get() == DoubleSolenoid.Value.kForward){
+          shooterPosition.setReversed();
+        }
+        if(shooterPosition.isReady()){
+          ballShooter.shoot();
+        }
+      }
+    }
+    if (input.driver.getRawButton(6)) {
+      if (intake.isReady()) {
+        shooterPosition.setFoward();
+        if (shooterPosition.m_solenoid.get() == DoubleSolenoid.Value.kReverse) {
+          shooterPosition.setFoward();
+        }
+        if (shooterPosition.isReady()) {
+          ballShooter.intake();
+        }
+      }
     }
 
   }

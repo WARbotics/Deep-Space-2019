@@ -1,34 +1,67 @@
 package frc.robot.components;
+
 import  edu.wpi.first.wpilibj.VictorSP;
+import frc.robot.common.MotorGain;
 
 public class LinearSlider{
-    /*
-     The state of the linear could be done by if the linear slider is the moving up and down via 
-     constant rate then that means that we can do the math and have a varible that is being added 
-     and when it hits a value it means it is at the top and will have flag. idk 
-    */
-    VictorSP motor; 
-    double speed;
-    String state; 
+    VictorSP motor = new VictorSP(5); // Check if the motor port is correct
+    MotorGain raise = new MotorGain(.5,.8);
+    MotorGain lower = new MotorGain(.5,.8);
+    double speed; 
+    LinearSlider.SliderState state;
+    double height = 0; // Holds the height of linear Slider (0 is the down state)
+    double sliderMaxHeight = 400; // Find this out 
+    enum SliderState {
+        RAISING, LOWERING, STILL
+    }
 
-    public LinearSlider(VictorSP motor){
-        this.motor = motor;
-    }
-    private void setState(String state){
+    private void setState(SliderState state){
         this.state = state;
-    }
-    public void setSpeed(double speed){
-        if (speed > 0){
-            this.setState("raising");
-        }else if( speed < 0){
-            this.setState("lowering");
+    }   
+    public void raise(){
+        if(getState() == SliderState.RAISING){
+            // Makes sure that you don't raise the slider higher than the max 
+            if(0 <= height && height < sliderMaxHeight){
+                raise.cycle(); // Adding 5% each cycle 
+                setMotorSpeed(raise.getMotorSpeed()); //The motor speed increase based on the amount of cycles and how the amount of percent gain.
+            }else{
+                setState(SliderState.STILL);
+            }
         }else{
-            this.setState("Not moving");
+            setState(SliderState.RAISING);
+            raise.reset();
         }
-        this.speed = speed;
+
     }
-    public void move(){
-        this.setState("moving");
-        this.motor.set(this.speed);
+    public void lower(){
+        if (getState() == SliderState.LOWERING){
+            // You cannot lower below the bottom 
+            if(0< height){
+                lower.cycle();
+                setMotorSpeed(-(lower.getMotorSpeed()));
+            }else{
+                setState(SliderState.STILL);
+            }
+        }else{
+            setState(SliderState.LOWERING);
+            lower.reset();
+        }
+
+    }
+    public double getHeight(){
+        return this.height;
+    }
+    public LinearSlider.SliderState getState(){
+        return this.state;
+    }
+    public void setMotorSpeed(double speed){
+        this.motor.set(speed);
+    }
+    public boolean isRaising(){
+        if(getState() == SliderState.RAISING){
+            return true;
+        }else{
+            return false;
+        }
     }
 }   

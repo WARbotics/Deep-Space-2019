@@ -1,12 +1,13 @@
 package frc.robot.components;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.Timer;
 
 public class Pnumatics{
 
-    DoubleSolenoid m_solenoid = new DoubleSolenoid(0,1);
-    // public Compressor compressor = new Compressor();
-    // Add a thing that return if the presure is too low and what the preasure actually is
+    public DoubleSolenoid m_solenoid = new DoubleSolenoid(0,1);
+    public DoubleSolenoid.Value state; 
+    double latest = 0;
     public void setFoward(){
         m_solenoid.set(DoubleSolenoid.Value.kForward);
     }
@@ -17,9 +18,19 @@ public class Pnumatics{
     public void setOff(){
         m_solenoid.set(DoubleSolenoid.Value.kOff);
     }
-    /*
-    public boolean isCompressorOn(){
-        return compressor.enabled();
+    public boolean isOpen(){
+        if(state == DoubleSolenoid.Value.kForward){
+            return true;
+        }else{
+            return false;
+        }
     }
-    */
+    public boolean isReady(){
+        double now = Timer.getFPGATimestamp();
+        if ((now-latest) > .5) {
+            latest = now;
+            return true;
+        }
+        return false;
+    }
 }
