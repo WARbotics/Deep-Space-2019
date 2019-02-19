@@ -21,7 +21,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import frc.robot.common.ButtonDebouncer;
 import frc.robot.components.Shooter;
 import frc.robot.components.LinearSlider;
-
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 /**
  * MOTOR CONTROLLERS
  * [] Accelamentor (speed)
@@ -53,6 +53,8 @@ public class Robot extends TimedRobot {
   OI input;
   Pnumatics peak;  
   Pnumatics shooterPosition;
+  DoubleSolenoid peakSolenoid;
+  DoubleSolenoid shooterSolenoid; 
   Test unitTest = new Test();
   LinearSlider slider; 
   Shooter ballShooter; 
@@ -82,8 +84,10 @@ public class Robot extends TimedRobot {
     drive = new Drivetrain();
     drive.setMotorsInverted();
     input = new OI();
-    peak = new Pnumatics();
-    shooterPosition = new Pnumatics();
+    peakSolenoid = new DoubleSolenoid(0, 1);
+    shooterSolenoid = new DoubleSolenoid(2,3);
+    peak = new Pnumatics(peakSolenoid);
+    shooterPosition = new Pnumatics(shooterSolenoid);
     slider = new LinearSlider();
     ballShooter = new Shooter();
     // DataTables 

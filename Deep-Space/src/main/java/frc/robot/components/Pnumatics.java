@@ -4,8 +4,12 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class Pnumatics{
 
-    public DoubleSolenoid m_solenoid = new DoubleSolenoid(0,1);
+
+    public DoubleSolenoid m_solenoid;
     double latest = 0;
+    public Pnumatics(DoubleSolenoid Solenoid){
+        this.m_solenoid = Solenoid;
+    }
     public void setFoward(){
         m_solenoid.set(DoubleSolenoid.Value.kForward);
     }

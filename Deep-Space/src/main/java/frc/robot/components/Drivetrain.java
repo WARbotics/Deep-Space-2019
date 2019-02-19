@@ -7,10 +7,10 @@ import java.util.HashMap;
 public class Drivetrain {
     // TODO: Check that VictorSP port number are corret
 
-    public VictorSP motor0 = new VictorSP(0);
-    public VictorSP motor1 = new VictorSP(13);
+    public VictorSP motor0 = new VictorSP(1);
+    public VictorSP motor1 = new VictorSP(2);
     public VictorSP motor2 = new VictorSP(14);
-    public VictorSP motor3 = new VictorSP(1);
+    public VictorSP motor3 = new VictorSP(15);
     public VictorSP[] motors = {motor0, motor1, motor2, motor3};
     HashMap <VictorSP, Boolean> motorStatus = new HashMap<>();
     public SpeedControllerGroup m_Right = new SpeedControllerGroup(motor3, motor2);
