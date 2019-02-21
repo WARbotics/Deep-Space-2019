@@ -22,6 +22,8 @@ import frc.robot.common.ButtonDebouncer;
 import frc.robot.components.Shooter;
 import frc.robot.components.LinearSlider;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
+
 /**
  * MOTOR CONTROLLERS
  * [] Accelamentor (speed)
@@ -69,6 +71,7 @@ public class Robot extends TimedRobot {
   NetworkTable visionTable;
   NetworkTable defaultTable;
   NetworkTableEntry testEntry;
+  PowerDistributionPanel PDP; 
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
@@ -90,6 +93,7 @@ public class Robot extends TimedRobot {
     shooterPosition = new Pnumatics(shooterSolenoid);
     slider = new LinearSlider();
     ballShooter = new Shooter();
+
     // DataTables 
     //  Java side will hold the datatable server becuase it is on the roborio
     defaultTableInit = NetworkTableInstance.getDefault();
@@ -107,6 +111,11 @@ public class Robot extends TimedRobot {
     shoot = new ButtonDebouncer(input.driver, 5, .5);
     intake = new ButtonDebouncer(input.driver, 6, .5);
 
+    // PDP
+    PDP = new PowerDistributionPanel();
+    PDP.clearStickyFaults();
+
+    // SmartDasboard 
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);

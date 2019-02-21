@@ -1,18 +1,18 @@
 package frc.robot.components;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive; 
-import edu.wpi.first.wpilibj.VictorSP;
+import edu.wpi.first.wpilibj.PWMVictorSPX;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import java.util.HashMap;
 
 public class Drivetrain {
     // TODO: Check that VictorSP port number are corret
 
-    public VictorSP motor0 = new VictorSP(1);
-    public VictorSP motor1 = new VictorSP(2);
-    public VictorSP motor2 = new VictorSP(14);
-    public VictorSP motor3 = new VictorSP(15);
-    public VictorSP[] motors = {motor0, motor1, motor2, motor3};
-    HashMap <VictorSP, Boolean> motorStatus = new HashMap<>();
+    public PWMVictorSPX motor0 = new PWMVictorSPX(1);
+    public PWMVictorSPX motor1 = new PWMVictorSPX(2);
+    public PWMVictorSPX motor2 = new PWMVictorSPX(14);
+    public PWMVictorSPX motor3 = new PWMVictorSPX(15);
+    public PWMVictorSPX[] motors = {motor0, motor1, motor2, motor3};
+    HashMap <PWMVictorSPX, Boolean> motorStatus = new HashMap<>();
     public SpeedControllerGroup m_Right = new SpeedControllerGroup(motor3, motor2);
     public SpeedControllerGroup m_Left = new SpeedControllerGroup(motor0, motor1);
     public DifferentialDrive m_Drive = new DifferentialDrive(m_Left, m_Right);
@@ -35,11 +35,11 @@ public class Drivetrain {
         m_Drive.arcadeDrive(speed, rotation);
     }
     private void setMotorStatus(){
-        for(VictorSP motor : motors){
+        for(PWMVictorSPX motor : motors){
             motorStatus.put(motor ,motor.isAlive());
         }
     }
-    public HashMap<VictorSP, Boolean> getMotorStatus(){
+    public HashMap<PWMVictorSPX, Boolean> getMotorStatus(){
         setMotorStatus();
         return motorStatus; 
     }
