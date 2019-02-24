@@ -18,6 +18,9 @@ public class LinearSlider{
     private void setState(SliderState state){
         this.state = state;
     }   
+    /* 
+    - create a waypoint system
+    */ 
     public void raise(){
         if(getState() == SliderState.RAISING){
             // Makes sure that you don't raise the slider higher than the max 

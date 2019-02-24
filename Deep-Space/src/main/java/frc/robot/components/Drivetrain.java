@@ -20,7 +20,7 @@ public class Drivetrain {
     public double speed = 0; 
     public double rotation = 0;
     
-    public boolean isMoving = !((speed == 0) && (speed== 0)); 
+    public boolean isMoving = !(speed == 0); 
 
     public void setSpeed(double speed){
        this.speed = speed; 
