@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.robot.common;
 
 import edu.wpi.first.wpilibj.Compressor;
 

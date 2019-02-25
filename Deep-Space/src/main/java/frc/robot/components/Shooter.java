@@ -4,8 +4,8 @@ import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 public class Shooter{ 
     
-    VictorSP motor = new VictorSP(4); 
-    VictorSP motor1 = new VictorSP(6); // Check position
+    VictorSP motor = new VictorSP(6); 
+    VictorSP motor1 = new VictorSP(7); // Check position
     SpeedControllerGroup shooter = new SpeedControllerGroup(motor, motor1);
     /*
         WIP

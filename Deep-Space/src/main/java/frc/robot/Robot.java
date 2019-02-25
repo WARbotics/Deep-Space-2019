@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.components.Drivetrain;
 import frc.robot.components.OI;
 import frc.robot.components.Pnumatics;
-import frc.robot.Test;
+import frc.robot.common.Test;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -25,7 +25,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 
 /**
- * MOTOR CONTROLLERS
+ * MOTOPR CONTROLLERS
  * [] Accelamentor (speed)
  * 4 drive train Victor SP
  * 2 Victor SP for shooter 
@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
  * [] Camera Server 
  * [] Vision Processing 
  * [] Display data onto shuffle board 
+ * [] learn about network tables
  * [] Create safety flags 
  * [] Multithreading 
  * [] The shooting pnumatics is just going to be on for ready to fire at an angle or off to collect 
@@ -46,21 +47,21 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the TimedRobot
  * documentation. If you change the name of this class or the package after
- * creating this project, you must also uWPILibdate the build.gradle file in the
+ * creating this project, you must also update the build.gradle file in the
  * project.
  **/
 public class Robot extends TimedRobot {
   Drivetrain drive;
   OI input;
-  Pnumatics peak;  
+  Pnumatics beak;  
   Pnumatics shooterPosition;
-  DoubleSolenoid peakSolenoid;
+  DoubleSolenoid beakSolenoid;
   DoubleSolenoid shooterSolenoid; 
   Test unitTest = new Test();
   LinearSlider slider; 
   Shooter ballShooter; 
-  ButtonDebouncer peakButtonOpen; 
-  ButtonDebouncer peakButtonClose;
+  ButtonDebouncer beakButtonOpen; 
+  ButtonDebouncer beakButtonClose;
   ButtonDebouncer sliderButtonRaise;
   ButtonDebouncer sliderButtonLower;
   ButtonDebouncer shoot;
@@ -86,9 +87,9 @@ public class Robot extends TimedRobot {
     drive = new Drivetrain();
     drive.setMotorsInverted();
     input = new OI();
-    peakSolenoid = new DoubleSolenoid(0, 1);
+    beakSolenoid = new DoubleSolenoid(0, 1);
     shooterSolenoid = new DoubleSolenoid(2,3);
-    peak = new Pnumatics(peakSolenoid);
+    beak = new Pnumatics(beakSolenoid);
     shooterPosition = new Pnumatics(shooterSolenoid);
     slider = new LinearSlider();
     ballShooter = new Shooter();
@@ -103,8 +104,8 @@ public class Robot extends TimedRobot {
     visionTableInit.startClientTeam(6925);
     
     // Debouncer 
-    peakButtonOpen = new ButtonDebouncer(input.driver,1, .5);
-    peakButtonClose = new ButtonDebouncer(input.driver, 2, .5);
+    beakButtonOpen = new ButtonDebouncer(input.driver,1, .5);
+    beakButtonClose = new ButtonDebouncer(input.driver, 2, .5);
     sliderButtonRaise = new ButtonDebouncer(input.driver, 3, .5);
     sliderButtonLower = new ButtonDebouncer(input.driver, 4, .5);
     shoot = new ButtonDebouncer(input.driver, 5, .5);
@@ -133,7 +134,7 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     SmartDashboard.putNumber("Linear Slider Height", slider.getHeight());
     SmartDashboard.putBoolean("Linear Slider Raising", slider.isRaising());
-    SmartDashboard.putBoolean("Peak Open", peak.isOpen());
+    SmartDashboard.putBoolean("beak Open", beak.isOpen());
     SmartDashboard.putBoolean("Shooter Position down", shooterPosition.isOpen());
   }
 
@@ -184,13 +185,13 @@ public class Robot extends TimedRobot {
     drive.m_Drive.arcadeDrive(driveY*.80, driveX*.80);
     
     if (input.driver.getRawButton(1)){
-      if(peakButtonOpen.isReady()){
-        peak.setFoward();
+      if(beakButtonOpen.isReady()){
+        beak.setFoward();
       }
     }
     if (input.driver.getRawButton(2)){
-      if(peakButtonClose.isReady()){
-        peak.setReversed();
+      if(beakButtonClose.isReady()){
+        beak.setReversed();
       }
     }
     if (input.driver.getRawButton(3)){

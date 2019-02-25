@@ -9,8 +9,8 @@ public class Drivetrain {
 
     public PWMVictorSPX motor0 = new PWMVictorSPX(1);
     public PWMVictorSPX motor1 = new PWMVictorSPX(2);
-    public PWMVictorSPX motor2 = new PWMVictorSPX(14);
-    public PWMVictorSPX motor3 = new PWMVictorSPX(15);
+    public PWMVictorSPX motor2 = new PWMVictorSPX(3);
+    public PWMVictorSPX motor3 = new PWMVictorSPX(4);
     public PWMVictorSPX[] motors = {motor0, motor1, motor2, motor3};
     HashMap <PWMVictorSPX, Boolean> motorStatus = new HashMap<>();
     public SpeedControllerGroup m_Right = new SpeedControllerGroup(motor3, motor2);
@@ -20,7 +20,7 @@ public class Drivetrain {
     public double speed = 0; 
     public double rotation = 0;
     
-    public boolean isMoving = !(speed == 0); 
+    public boolean isMoving = !((speed == 0) && (speed== 0)); 
 
     public void setSpeed(double speed){
        this.speed = speed; 
