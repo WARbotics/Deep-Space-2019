@@ -1,31 +1,21 @@
 package frc.robot.common;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PWMVictorSPX;
+import frc.robot.components.Drivetrain;
 
 public class Test {
-    // The test case for the robot go inside of here so it makes it easy to hold all in one place
+    // This should be filled with cases that are run when the robot is in test mode 
     /*
-    TODO:
+    ITEMS to test 
+    - Drivetrain 
+    - pnuamtics 
+    - PID loops test 
+    - ButtonDebouncer 
+    - Network 
+    - Joystick
+    - Shooter 
+    */
 
-     -Create a network table here to hold values to check things
-    */ 
-
-    public boolean isTestFinished = false;
-
-    public String testCompressor(){
-        Compressor testCompressor = new Compressor(0); 
-        if (!testCompressor.enabled()){
-            testCompressor.close();
-            return "[X] Compressor has is not enabled";
-        }else {
-            testCompressor.close();
-            return "[√] Compressor has enabled is working";
-        }
-    }
-
-
-
-
-
-
+    
 }

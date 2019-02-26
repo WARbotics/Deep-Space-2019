@@ -1,8 +1,8 @@
 package frc.robot.common;
 
 public class TurnPID{
-    double P,I,D = 1;
-    int integral , previous_error;
+    double P,I,D;
+    double integral , previous_error;
     double setpoint = 0;
     double rcw;
 
@@ -11,7 +11,7 @@ public class TurnPID{
         this.I = I; 
         this.D = D; 
     }
-    public void setSetpoint(double setPoint){
+    public void setPoint(double setPoint){
         this.setpoint = setPoint; 
     }
     public void PID(double angle){

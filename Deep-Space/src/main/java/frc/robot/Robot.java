@@ -98,8 +98,9 @@ public class Robot extends TimedRobot {
     shooterPosition = new Pnumatics(shooterSolenoid);
     slider = new LinearSlider();
     ballShooter = new Shooter();
-    driveTurnPID = new TurnPID(1, 1, 1);
+    driveTurnPID = new TurnPID(0.10, 0.0, 0);
     navXMicro = new AHRS(Port.kUSB);
+    navXMicro.reset();
 
     // DataTables 
     //  Java side will hold the datatable server becuase it is on the roborio
@@ -139,8 +140,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    SmartDashboard.putNumber("Linear Slider Height", slider.getHeight());
-    SmartDashboard.putBoolean("Linear Slider Raising", slider.isRaising());
     SmartDashboard.putBoolean("beak Open", beak.isOpen());
     SmartDashboard.putBoolean("Shooter Position down", shooterPosition.isOpen());
   }
@@ -187,12 +186,12 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     // Double check to see if the x and y are corret with the joystick
     // Get the correct button values
-    double driveY  = input.driver.getRawAxis(1);
-    double driveX = input.driver.getRawAxis(0);
+    double driveY  = -input.driver.getRawAxis(1);
+    double driveX = -input.driver.getRawAxis(0);
     // Thread this to 200 ms for the speed controller 
-    driveTurnPID.setSetpoint(driveX);
+    driveTurnPID.setPoint(driveY);
     driveTurnPID.PID(navXMicro.getAngle());
-    drive.m_Drive.arcadeDrive(driveY, driveTurnPID.getRCW());
+    drive.m_Drive.arcadeDrive(driveX, driveY);
     
     if (input.driver.getRawButton(1)){
       if(beakButtonOpen.isReady()){
@@ -206,12 +205,12 @@ public class Robot extends TimedRobot {
     }
     if (input.driver.getRawButton(3)){
       if(sliderButtonRaise.isReady()){
-        slider.raise(); 
+        System.out.println(navXMicro.getAngle()); 
       }
     }
     if (input.driver.getRawButton(4)){
       if(sliderButtonLower.isReady()){
-        slider.lower();
+        System.out.println(driveTurnPID.getRCW());
       }
     }
     if (input.driver.getRawButton(5)){
@@ -242,9 +241,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
-    if(!unitTest.isTestFinished){
-      // Runs the test cases 
-      unitTest.testCompressor();
-    }
+
   }
 }

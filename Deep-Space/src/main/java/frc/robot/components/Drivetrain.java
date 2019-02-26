@@ -7,13 +7,13 @@ import java.util.HashMap;
 public class Drivetrain {
     // TODO: Check that VictorSP port number are corret
 
-    public PWMVictorSPX motor0 = new PWMVictorSPX(1);
-    public PWMVictorSPX motor1 = new PWMVictorSPX(2);
-    public PWMVictorSPX motor2 = new PWMVictorSPX(3);
-    public PWMVictorSPX motor3 = new PWMVictorSPX(4);
+    public PWMVictorSPX motor0 = new PWMVictorSPX(0);
+    public PWMVictorSPX motor1 = new PWMVictorSPX(1);
+    public PWMVictorSPX motor2 = new PWMVictorSPX(2);
+    public PWMVictorSPX motor3 = new PWMVictorSPX(3);
     public PWMVictorSPX[] motors = {motor0, motor1, motor2, motor3};
     HashMap <PWMVictorSPX, Boolean> motorStatus = new HashMap<>();
-    public SpeedControllerGroup m_Right = new SpeedControllerGroup(motor3, motor2);
+    public SpeedControllerGroup m_Right = new SpeedControllerGroup(motor2, motor3);
     public SpeedControllerGroup m_Left = new SpeedControllerGroup(motor0, motor1);
     public DifferentialDrive m_Drive = new DifferentialDrive(m_Left, m_Right);
     

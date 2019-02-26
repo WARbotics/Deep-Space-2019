@@ -1,11 +1,11 @@
 package frc.robot.components;
 
-import edu.wpi.first.wpilibj.VictorSP;
+import edu.wpi.first.wpilibj.PWMVictorSPX;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 public class Shooter{ 
     
-    VictorSP motor = new VictorSP(6); 
-    VictorSP motor1 = new VictorSP(7); // Check position
+    PWMVictorSPX motor = new PWMVictorSPX(6); 
+    PWMVictorSPX motor1 = new PWMVictorSPX(7); // Check position
     SpeedControllerGroup shooter = new SpeedControllerGroup(motor, motor1);
     /*
         WIP
