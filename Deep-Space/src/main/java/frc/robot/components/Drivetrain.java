@@ -21,7 +21,7 @@ public class Drivetrain {
     public double rotation = 0;
     
     public boolean isMoving = !((speed == 0) && (speed== 0)); 
-
+    // PID loop 
     public void setSpeed(double speed){
        this.speed = speed; 
     }

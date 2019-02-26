@@ -10,6 +10,7 @@ public class Shooter{
     /*
         WIP
         I coming back to this I just need to figure out how we are going to shoot the ball.
+        bang-bang 
     */
     public void setSpeed(double speed){
         shooter.set(speed);

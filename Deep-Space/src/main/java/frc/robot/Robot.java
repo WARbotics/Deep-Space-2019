@@ -23,6 +23,9 @@ import frc.robot.components.Shooter;
 import frc.robot.components.LinearSlider;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import frc.robot.common.TurnPID;
+import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.SerialPort.Port;
 
 /**
  * MOTOPR CONTROLLERS
@@ -60,6 +63,8 @@ public class Robot extends TimedRobot {
   Test unitTest = new Test();
   LinearSlider slider; 
   Shooter ballShooter; 
+  TurnPID driveTurnPID;
+  AHRS navXMicro; 
   ButtonDebouncer beakButtonOpen; 
   ButtonDebouncer beakButtonClose;
   ButtonDebouncer sliderButtonRaise;
@@ -93,6 +98,8 @@ public class Robot extends TimedRobot {
     shooterPosition = new Pnumatics(shooterSolenoid);
     slider = new LinearSlider();
     ballShooter = new Shooter();
+    driveTurnPID = new TurnPID(1, 1, 1);
+    navXMicro = new AHRS(Port.kUSB);
 
     // DataTables 
     //  Java side will hold the datatable server becuase it is on the roborio
@@ -182,7 +189,10 @@ public class Robot extends TimedRobot {
     // Get the correct button values
     double driveY  = input.driver.getRawAxis(1);
     double driveX = input.driver.getRawAxis(0);
-    drive.m_Drive.arcadeDrive(driveY*.80, driveX*.80);
+    // Thread this to 200 ms for the speed controller 
+    driveTurnPID.setSetpoint(driveX);
+    driveTurnPID.PID(navXMicro.getAngle());
+    drive.m_Drive.arcadeDrive(driveY, driveTurnPID.getRCW());
     
     if (input.driver.getRawButton(1)){
       if(beakButtonOpen.isReady()){
