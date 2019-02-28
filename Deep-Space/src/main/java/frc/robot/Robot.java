@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import frc.robot.common.TurnPID;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SerialPort.Port;
+import frc.robot.common.MotorRamp;
 
 /**
  * MOTOPR CONTROLLERS
@@ -65,6 +66,7 @@ public class Robot extends TimedRobot {
   Shooter ballShooter; 
   TurnPID driveTurnPID;
   AHRS navXMicro; 
+  MotorRamp fowardRamp;
   ButtonDebouncer beakButtonOpen; 
   ButtonDebouncer beakButtonClose;
   ButtonDebouncer sliderButtonRaise;
@@ -98,9 +100,10 @@ public class Robot extends TimedRobot {
     shooterPosition = new Pnumatics(shooterSolenoid);
     slider = new LinearSlider();
     ballShooter = new Shooter();
-    driveTurnPID = new TurnPID(0.10, 0.0, 0);
+    driveTurnPID = new TurnPID(0.2, 0.0, 0);
     navXMicro = new AHRS(Port.kUSB);
     navXMicro.reset();
+    fowardRamp = new MotorRamp(0.03);
 
     // DataTables 
     //  Java side will hold the datatable server becuase it is on the roborio
@@ -120,9 +123,11 @@ public class Robot extends TimedRobot {
     intake = new ButtonDebouncer(input.driver, 6, .5);
 
     // PDP
-    PDP = new PowerDistributionPanel();
+    /*
+    PDP = new PowerDistributionPanel(0);
     PDP.clearStickyFaults();
 
+    */
     // SmartDasboard 
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
@@ -189,9 +194,7 @@ public class Robot extends TimedRobot {
     double driveY  = -input.driver.getRawAxis(1);
     double driveX = -input.driver.getRawAxis(0);
     // Thread this to 200 ms for the speed controller 
-    driveTurnPID.setPoint(driveY);
-    driveTurnPID.PID(navXMicro.getAngle());
-    drive.m_Drive.arcadeDrive(driveX, driveY);
+    drive.m_Drive.arcadeDrive(driveX*.50, driveY * .50);
     
     if (input.driver.getRawButton(1)){
       if(beakButtonOpen.isReady()){
