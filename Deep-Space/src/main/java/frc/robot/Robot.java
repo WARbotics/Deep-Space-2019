@@ -126,7 +126,6 @@ public class Robot extends TimedRobot {
     /*
     PDP = new PowerDistributionPanel(0);
     PDP.clearStickyFaults();
-
     */
     // SmartDasboard 
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
