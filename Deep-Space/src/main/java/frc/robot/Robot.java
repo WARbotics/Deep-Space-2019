@@ -27,6 +27,7 @@ import frc.robot.common.TurnPID;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import frc.robot.common.MotorRamp;
+import edu.wpi.first.wpilibj.Joystick;
 
 /**
  * MOTOPR CONTROLLERS
@@ -56,6 +57,8 @@ import frc.robot.common.MotorRamp;
  **/
 public class Robot extends TimedRobot {
   Drivetrain drive;
+  Joystick driverStick;
+  Joystick operatorStick; 
   OI input;
   Pnumatics beak;  
   Pnumatics shooterPosition;
@@ -93,7 +96,7 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     drive = new Drivetrain();
     drive.setMotorsInverted();
-    input = new OI();
+    input = new OI(driverStick, operatorStick);
     beakSolenoid = new DoubleSolenoid(0, 1);
     shooterSolenoid = new DoubleSolenoid(2,3);
     beak = new Pnumatics(beakSolenoid);
