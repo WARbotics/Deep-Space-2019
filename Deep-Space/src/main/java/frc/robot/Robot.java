@@ -94,20 +94,26 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    // Drive
     drive = new Drivetrain();
     drive.setMotorsInverted();
-    input = new OI(driverStick, operatorStick);
+    //Joysticks 
+    input = new OI(driverStick = new Joystick(0), operatorStick = new Joystick(1));
+    // Pnumatics
     beakSolenoid = new DoubleSolenoid(0, 1);
     shooterSolenoid = new DoubleSolenoid(2,3);
     beak = new Pnumatics(beakSolenoid);
     shooterPosition = new Pnumatics(shooterSolenoid);
+    // Manuplators 
     slider = new LinearSlider();
     ballShooter = new Shooter();
+    // Motion
     driveTurnPID = new TurnPID(0.2, 0.0, 0);
-    navXMicro = new AHRS(Port.kUSB);
-    navXMicro.reset();
     fowardRamp = new MotorRamp(0.03);
 
+    // NAV
+    navXMicro = new AHRS(Port.kUSB);
+    navXMicro.reset();
     // DataTables 
     //  Java side will hold the datatable server becuase it is on the roborio
     defaultTableInit = NetworkTableInstance.getDefault();
@@ -196,7 +202,7 @@ public class Robot extends TimedRobot {
     double driveY  = -input.driver.getRawAxis(1);
     double driveX = -input.driver.getRawAxis(0);
     // Thread this to 200 ms for the speed controller 
-    drive.m_Drive.arcadeDrive(driveX*.50, driveY * .50);
+    drive.m_Drive.arcadeDrive(fowardRamp.getSpeed(driveX), driveY * .80);
     
     if (input.driver.getRawButton(1)){
       if(beakButtonOpen.isReady()){

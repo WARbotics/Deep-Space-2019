@@ -14,10 +14,7 @@ public class Logger{
     String dirFile;
     String fileName = dirFile + "log.txt";  // Find out what usb file path are 
     Double matchTime = Timer.getMatchTime();
-    
-    public Logger(){
 
-    }
     private void createFile() throws IOException{
         // Creates the file if the file is not created 
         if(!isFileCreated){
