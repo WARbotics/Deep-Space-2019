@@ -32,8 +32,6 @@ import frc.robot.common.Logger;
 /**
  * TODO:
  *  [] Places logger points through out the files
- *  [] Decide on RobotState 
- *  [] Test Cases
  *  [] Linear slider
  *  [] Auto turn 
  *  [] auto play generator based abstrasct moves 
@@ -124,6 +122,7 @@ public class Robot extends TimedRobot {
     // NAV
     navXMicro = new AHRS(Port.kUSB);
     navXMicro.reset();
+
     // DataTables 
     //  Java side will hold the datatable server becuase it is on the roborio
     defaultTableInit = NetworkTableInstance.getDefault();
@@ -215,6 +214,20 @@ public class Robot extends TimedRobot {
     // Thread this to 200 ms for the speed controller 
     drive.m_Drive.arcadeDrive(fowardRamp.getSpeed(driveX), driveY * .80);
     
+    if (input.operator.getRawButton(1)){
+      logger.info("Linear slider is moving up");
+      slider.motor.set(.6);
+    }else{
+      slider.motor.set(0);
+    }
+    
+    if (input.operator.getRawButton(2)){
+      logger.info("Linear slider is moving down");
+      slider.motor.set(-.4);
+    }else{
+      slider.motor.set(0);
+    }
+
     if (input.driver.getRawButton(1)){
       // Opens the beak
       if(beakButtonOpen.isReady()){
@@ -261,3 +274,5 @@ public class Robot extends TimedRobot {
 
   }
 }
+
+

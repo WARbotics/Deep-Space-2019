@@ -4,13 +4,13 @@ import  edu.wpi.first.wpilibj.PWMVictorSPX;
 import frc.robot.common.LinearPID;
 
 public class LinearSlider{
-    /*
-     - A function that makes the robot return back down to the base 
-    */
-    PWMVictorSPX motor;; // Check if the motor port is correct
+    /**
+     * LinerSlider object used with one motor
+     */
+    public PWMVictorSPX motor; // Check if the motor port is correct
     LinearPID PID = new LinearPID(0, 0, 0); // Tune this
-    public float height = 0; 
-    public float maxHeight; // Find this height out 
+    public float height = 0; // Data from a potentionometer that we dont  have  <--- need to implement
+    double maxHeight; // Find this height out 
     boolean isMoving; 
     public Position position = Position.BOTTOM;
 
@@ -19,7 +19,7 @@ public class LinearSlider{
     }
 
     public enum Position{
-        BOTTOM(0), MIDDLE(255), TOP(400);
+        BOTTOM(0), MIDDLE(200), TOP(400);
 
         private final int value;
 
@@ -32,5 +32,14 @@ public class LinearSlider{
         }
 
     }
+    public void moveToPosition(LinearSlider.Position position){
+        PID.setPoint(position.getValue());
+        PID.PID(height);
+        motor.set(PID.getRCW());
+    }
+
+
 
 }   
+
+

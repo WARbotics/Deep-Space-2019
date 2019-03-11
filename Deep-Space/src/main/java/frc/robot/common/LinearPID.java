@@ -17,9 +17,6 @@ public class LinearPID{
     }
 
     public void PID(float actual){
-        /*
-        find error 
-        */
         double error = (setPoint - actual);
         this.integral += (error * .02);
         double derivative = (error - this.previous_error) /.02;
