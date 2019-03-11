@@ -4,13 +4,13 @@ import com.kauailabs.navx.frc.AHRS;
 import frc.robot.common.TurnPID;
 
 public class Turn{
-    /*
-        A autonmouse function for turning 
-    */
-
+    /**
+     * A autonmouse function for turning 
+     */ 
     AHRS navBoard;
     double actualAngle = navBoard.getAngle(); 
     TurnPID PID = new TurnPID(0,0,0); // Tune this
+
     public Turn(AHRS navBoard){
         this.navBoard = navBoard; 
     }

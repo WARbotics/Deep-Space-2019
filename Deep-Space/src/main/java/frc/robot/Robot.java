@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.components.Drivetrain;
 import frc.robot.components.OI;
 import frc.robot.components.Pnumatics;
-import frc.robot.common.Test;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -65,7 +64,6 @@ public class Robot extends TimedRobot {
   Pnumatics shooterPosition;
   DoubleSolenoid beakSolenoid;
   DoubleSolenoid shooterSolenoid; 
-  Test unitTest = new Test();
   PWMVictorSPX sliderMotor;
   LinearSlider slider; 
   Shooter ballShooter; 
