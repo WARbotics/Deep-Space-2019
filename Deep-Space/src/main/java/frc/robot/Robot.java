@@ -66,6 +66,7 @@ public class Robot extends TimedRobot {
   DoubleSolenoid beakSolenoid;
   DoubleSolenoid shooterSolenoid; 
   Test unitTest = new Test();
+  PWMVictorSPX sliderMotor;
   LinearSlider slider; 
   Shooter ballShooter; 
   TurnPID driveTurnPID;
@@ -96,7 +97,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    // Drive
+    // Drivetrain
     driveMotorLeft = new PWMVictorSPX(0);
     driveMotorLeft1 = new PWMVictorSPX(1);
     driveMotorRight = new PWMVictorSPX(2);
@@ -112,8 +113,9 @@ public class Robot extends TimedRobot {
     shooterSolenoid = new DoubleSolenoid(2,3);
     beak = new Pnumatics(beakSolenoid);
     shooterPosition = new Pnumatics(shooterSolenoid);
-    // Manuplators 
-    slider = new LinearSlider();
+    // LinearSlider
+    sliderMotor = new PWMVictorSPX(5);
+    slider = new LinearSlider(sliderMotor);
     //    Shooter
     leftShooter = new PWMVictorSPX(6);
     rightShooter = new PWMVictorSPX(7);
