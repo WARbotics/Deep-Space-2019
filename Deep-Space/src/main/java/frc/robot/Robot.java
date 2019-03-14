@@ -82,30 +82,21 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     // Drivetrain
-    PWMVictorSPX driveMotorLeft = new PWMVictorSPX(1);
-    PWMVictorSPX driveMotorLeft1 = new PWMVictorSPX(2);
-    PWMVictorSPX driveMotorRight = new PWMVictorSPX(3);
-    PWMVictorSPX driveMotorRight1 = new PWMVictorSPX(5);
-
-    drive = new Drivetrain(driveMotorLeft, driveMotorLeft1, driveMotorRight, driveMotorRight1);
+    drive = new Drivetrain();
     drive.invertLeftMotors();
     //Joysticks 
-    Joystick driverStick = new Joystick(0);
-    Joystick operatorStick = new Joystick(1);
-    input = new OI(driverStick, operatorStick);
+    input = new OI();
     // Pnumatics
     DoubleSolenoid beakSolenoid = new DoubleSolenoid(4, 5);
     DoubleSolenoid shooterSolenoid = new DoubleSolenoid(0,1);
     beak = new Pnumatics(beakSolenoid);
     shooterPosition = new Pnumatics(shooterSolenoid);
     // LinearSlider
-    PWMVictorSPX sliderMotor = new PWMVictorSPX(6);
-    slider = new LinearSlider(sliderMotor);
+    
+    slider = new LinearSlider();
     //    Shooter
-    PWMVictorSPX leftShooter = new PWMVictorSPX(7);
-    PWMVictorSPX rightShooter = new PWMVictorSPX(8);
 
-    ballShooter = new Shooter(leftShooter,rightShooter, .8);
+    ballShooter = new Shooter(.8);
     // Motion
     fowardRamp = new MotorRamp(0.03);
 
@@ -212,14 +203,14 @@ public class Robot extends TimedRobot {
       slider.motor.set(0);
     }
 
-    if (input.driver.getRawButton(1)){
+    if (input.operator.getRawButton(3)){
       // Opens the beak
       if(beakButtonOpen.isReady()){
         //logger.info("Beak is open");
         beak.setFoward();
       }
     }
-    if (input.driver.getRawButton(2)){
+    if (input.operator.getRawButton(4)){
       // Close the beak
       if(beakButtonClose.isReady()){
         //logger.info("Beak is closed");
@@ -227,7 +218,7 @@ public class Robot extends TimedRobot {
       }
     }
 
-    if (input.driver.getRawButton(5)){
+    if (input.operator.getRawButton(6)){
       // Check to see if the shooter is up and if so then it allow the user to shoot
       if(shootButtton.isReady()){
         if(shooterPosition.isState(DoubleSolenoid.Value.kForward) || shooterPosition.isState(DoubleSolenoid.Value.kOff)){
@@ -239,7 +230,7 @@ public class Robot extends TimedRobot {
       }
     }
 
-    if (input.driver.getRawButton(6)) {
+    if (input.operator.getRawButton(7)) {
       // Check to see if the shooter is down and if so then will allow the user to intake
       if (intakeButton.isReady()) {
         if(shooterPosition.isState(DoubleSolenoid.Value.kReverse) || shooterPosition.isState(DoubleSolenoid.Value.kOff)){

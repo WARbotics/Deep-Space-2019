@@ -9,26 +9,15 @@ public class Drivetrain {
     /**
      *  A hight object of the drivetrain
      */
-    public PWMVictorSPX leftMotor;
-    public PWMVictorSPX leftMotor1;
-    public PWMVictorSPX rightMotor;
-    public PWMVictorSPX rightMotor1;
+    public PWMVictorSPX leftMotor = new PWMVictorSPX(1);
+    public PWMVictorSPX leftMotor1 = new PWMVictorSPX(2);
+    public PWMVictorSPX rightMotor = new PWMVictorSPX(3);
+    public PWMVictorSPX rightMotor1 = new PWMVictorSPX(5);
     PWMVictorSPX[] motors = {leftMotor, leftMotor1, rightMotor, rightMotor1};
     HashMap <PWMVictorSPX, Boolean> motorStatus = new HashMap<>();
-    public SpeedControllerGroup m_Right;
-    public SpeedControllerGroup m_Left;
-    public DifferentialDrive m_Drive;
-    
-
-    public Drivetrain(PWMVictorSPX leftMotor, PWMVictorSPX leftMotor1, PWMVictorSPX rightMotor, PWMVictorSPX rightMotor1){
-        this.leftMotor = leftMotor; 
-        this.leftMotor1 = leftMotor1;
-        this.rightMotor = rightMotor;
-        this.rightMotor1 = rightMotor1;
-        this.m_Right = new SpeedControllerGroup(rightMotor, rightMotor1);
-        this.m_Left = new SpeedControllerGroup(leftMotor, leftMotor1);
-        this.m_Drive = new DifferentialDrive(m_Left, m_Right);
-    }
+    public SpeedControllerGroup m_Right = new SpeedControllerGroup(rightMotor, rightMotor1);
+    public SpeedControllerGroup m_Left = new SpeedControllerGroup(leftMotor,leftMotor1);
+    public DifferentialDrive m_Drive = new DifferentialDrive(m_Left,m_Right);
 
     private void setMotorStatus(){
         for(PWMVictorSPX motor : motors){
