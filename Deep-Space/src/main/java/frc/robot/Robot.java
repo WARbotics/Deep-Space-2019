@@ -27,6 +27,7 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import frc.robot.common.MotorRamp;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.cameraserver.CameraServer;
 //import frc.robot.common.Logger;
 
 /**
@@ -81,11 +82,13 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    // Camera 
+    CameraServer.getInstance().startAutomaticCapture();
     // Drivetrain
     PWMVictorSPX driveMotorLeft = new PWMVictorSPX(1);
-    PWMVictorSPX driveMotorLeft1 = new PWMVictorSPX(2);
-    PWMVictorSPX driveMotorRight = new PWMVictorSPX(3);
-    PWMVictorSPX driveMotorRight1 = new PWMVictorSPX(5);
+    PWMVictorSPX driveMotorLeft1 = new PWMVictorSPX(3);
+    PWMVictorSPX driveMotorRight = new PWMVictorSPX(7);
+    PWMVictorSPX driveMotorRight1 = new PWMVictorSPX(6);
 
     drive = new Drivetrain(driveMotorLeft, driveMotorLeft1, driveMotorRight, driveMotorRight1);
     drive.invertLeftMotors();
@@ -99,11 +102,11 @@ public class Robot extends TimedRobot {
     beak = new Pnumatics(beakSolenoid);
     shooterPosition = new Pnumatics(shooterSolenoid);
     // LinearSlider
-    PWMVictorSPX sliderMotor = new PWMVictorSPX(6);
+    PWMVictorSPX sliderMotor = new PWMVictorSPX(4);
     slider = new LinearSlider(sliderMotor);
     //    Shooter
-    PWMVictorSPX leftShooter = new PWMVictorSPX(7);
-    PWMVictorSPX rightShooter = new PWMVictorSPX(8);
+    PWMVictorSPX leftShooter = new PWMVictorSPX(0);
+    PWMVictorSPX rightShooter = new PWMVictorSPX(5);
 
     ballShooter = new Shooter(leftShooter,rightShooter, .8);
     // Motion
@@ -123,12 +126,12 @@ public class Robot extends TimedRobot {
     defaultTableInit.startClientTeam(6925);
     */
     // Debouncer 
-    beakButtonOpen = new ButtonDebouncer(input.driver,1, .5);
-    beakButtonClose = new ButtonDebouncer(input.driver, 2, .5);
-    sliderButtonRaise = new ButtonDebouncer(input.driver, 3, .5);
-    sliderButtonLower = new ButtonDebouncer(input.driver, 4, .5);
-    shootButtton = new ButtonDebouncer(input.driver, 5, .3);
-    intakeButton = new ButtonDebouncer(input.driver, 6, .3);
+    beakButtonOpen = new ButtonDebouncer(input.operator,1, .5);
+    beakButtonClose = new ButtonDebouncer(input.operator, 2, .5);
+    sliderButtonRaise = new ButtonDebouncer(input.operator, 3, .5);
+    sliderButtonLower = new ButtonDebouncer(input.operator, 4, .5);
+    shootButtton = new ButtonDebouncer(input.operator, 5, .3);
+    intakeButton = new ButtonDebouncer(input.operator, 6, .3);
     // PDP
     PDP = new PowerDistributionPanel();
     PDP.clearStickyFaults();
@@ -212,21 +215,21 @@ public class Robot extends TimedRobot {
       slider.motor.set(0);
     }
 
-    if (input.driver.getRawButton(1)){
+    if (input.operator.getRawButton(1)){
       // Opens the beak
       if(beakButtonOpen.isReady()){
         //logger.info("Beak is open");
         beak.setFoward();
       }
     }
-    if (input.driver.getRawButton(2)){
+    if (input.operator.getRawButton(2)){
       // Close the beak
       if(beakButtonClose.isReady()){
         //logger.info("Beak is closed");
         beak.setReversed();
       }
     }
-
+    /*
     if (input.driver.getRawButton(5)){
       // Check to see if the shooter is up and if so then it allow the user to shoot
       if(shootButtton.isReady()){
@@ -238,7 +241,8 @@ public class Robot extends TimedRobot {
         }
       }
     }
-
+    */
+    /*
     if (input.driver.getRawButton(6)) {
       // Check to see if the shooter is down and if so then will allow the user to intake
       if (intakeButton.isReady()) {
@@ -248,6 +252,7 @@ public class Robot extends TimedRobot {
         }else{ shooterPosition.setFoward();}
       }
     }
+    */
 
   }
   /**
