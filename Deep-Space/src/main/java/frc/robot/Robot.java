@@ -91,7 +91,7 @@ public class Robot extends TimedRobot {
     PWMVictorSPX driveMotorRight1 = new PWMVictorSPX(6);
 
     drive = new Drivetrain(driveMotorLeft, driveMotorLeft1, driveMotorRight, driveMotorRight1);
-    drive.invertLeftMotors();
+    drive.invertRightMotors();
     //Joysticks 
     Joystick driverStick = new Joystick(0);
     Joystick operatorStick = new Joystick(1);
@@ -102,15 +102,15 @@ public class Robot extends TimedRobot {
     beak = new Pnumatics(beakSolenoid);
     shooterPosition = new Pnumatics(shooterSolenoid);
     // LinearSlider
-    PWMVictorSPX sliderMotor = new PWMVictorSPX(4);
+    PWMVictorSPX sliderMotor = new PWMVictorSPX(0);
     slider = new LinearSlider(sliderMotor);
     //    Shooter
-    PWMVictorSPX leftShooter = new PWMVictorSPX(0);
+    PWMVictorSPX leftShooter = new PWMVictorSPX(4);
     PWMVictorSPX rightShooter = new PWMVictorSPX(5);
 
     ballShooter = new Shooter(leftShooter,rightShooter, .8);
     // Motion
-    fowardRamp = new MotorRamp(0.03);
+    fowardRamp = new MotorRamp(0.001);
 
     // NAV
     navXMicro = new AHRS(Port.kUSB);
@@ -133,8 +133,10 @@ public class Robot extends TimedRobot {
     shootButtton = new ButtonDebouncer(input.operator, 5, .3);
     intakeButton = new ButtonDebouncer(input.operator, 6, .3);
     // PDP
-    PDP = new PowerDistributionPanel();
+    
+    PDP = new PowerDistributionPanel(0);
     PDP.clearStickyFaults();
+    
     // SmartDasboard 
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
@@ -181,6 +183,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
+    double driveY = -input.driver.getRawAxis(1);
+    double driveX = input.driver.getRawAxis(0);
+    drive.m_Drive.arcadeDrive(driveX*.7, driveY * .7);
     switch (m_autoSelected) {
     case kCustomAuto:
       // Put custom auto code here
@@ -198,17 +203,17 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     double driveY  = -input.driver.getRawAxis(1);
-    double driveX = -input.driver.getRawAxis(0);
-    drive.m_Drive.arcadeDrive(fowardRamp.getSpeed(driveX), driveY*.8);
+    double driveX = input.driver.getRawAxis(0);
+    drive.m_Drive.arcadeDrive(driveX*.7, driveY*.7);
     // Thread this to 200 ms for the speed controller 
-    if (input.operator.getRawButton(1)){
+    if (input.operator.getRawButton(3)){
       //logger.info("Linear slider is moving up");
       slider.motor.set(.6);
     }else{
       slider.motor.set(0);
     }
     
-    if (input.operator.getRawButton(2)){
+    if (input.operator.getRawButton(4)){
       //logger.info("Linear slider is moving down");
       slider.motor.set(-.4);
     }else{
