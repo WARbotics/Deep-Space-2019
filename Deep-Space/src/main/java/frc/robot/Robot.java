@@ -78,10 +78,10 @@ public class Robot extends TimedRobot {
     // Camera 
     CameraServer.getInstance().startAutomaticCapture();
     // Drivetrain
-    PWMVictorSPX driveMotorLeft = new PWMVictorSPX(1);
+    PWMVictorSPX driveMotorLeft = new PWMVictorSPX(2);
     PWMVictorSPX driveMotorLeft1 = new PWMVictorSPX(3);
-    PWMVictorSPX driveMotorRight = new PWMVictorSPX(7);
-    PWMVictorSPX driveMotorRight1 = new PWMVictorSPX(6);
+    PWMVictorSPX driveMotorRight = new PWMVictorSPX(0);
+    PWMVictorSPX driveMotorRight1 = new PWMVictorSPX(1);
 
     drive = new Drivetrain(driveMotorLeft, driveMotorLeft1, driveMotorRight, driveMotorRight1);
     drive.invertRightMotors();
@@ -221,26 +221,6 @@ public class Robot extends TimedRobot {
         //logger.info("Beak is closed");
         beak.setReversed();
       }
-    }
-    if (input.operator.getRawButton(5)){
-      // Shoot 
-      ballShooter.shooter.set(.8);
-    }else{
-      ballShooter.shooter.set(0);
-    }
-    if (input.operator.getRawButton(3)){
-      ballShooter.shooter.set(-.8);
-      // intake
-    }else{
-      ballShooter.shooter.set(0);
-    }
-    if (input.operator.getRawButton(6)){
-      shooterPosition.m_solenoid.set(DoubleSolenoid.Value.kReverse);
-      // pnuamtics to shoot
-    }
-    if (input.operator.getRawButton(4)){
-      // pnumatics to intakes
-      shooterPosition.m_solenoid.set(DoubleSolenoid.Value.kForward);
     }
     // Automatic way that has not been tested 
     /*
