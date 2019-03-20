@@ -11,7 +11,7 @@ public class Shooter{
     double latest;
     public PWMVictorSPX leftMotor; 
     public PWMVictorSPX rightMotor;
-    SpeedControllerGroup shooter;
+    public SpeedControllerGroup shooter;
     double motorTime = .5; // The default time the motor will spin for 
 
     public Shooter(PWMVictorSPX leftMotor, PWMVictorSPX rightMotor, double motorTime){
