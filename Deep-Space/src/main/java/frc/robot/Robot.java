@@ -91,14 +91,7 @@ public class Robot extends TimedRobot {
     input = new OI(driverStick, operatorStick);
     // Pnumatics
     DoubleSolenoid beakSolenoid = new DoubleSolenoid(4, 5);
-    DoubleSolenoid shooterSolenoid = new DoubleSolenoid(0,1);
     beak = new Pnumatics(beakSolenoid);
-    shooterPosition = new Pnumatics(shooterSolenoid);
-    //    Shooter
-    PWMVictorSPX leftShooter = new PWMVictorSPX(4);
-    PWMVictorSPX rightShooter = new PWMVictorSPX(5);
-
-    ballShooter = new Shooter(leftShooter,rightShooter, .8);
     // Motion
     fowardRamp = new MotorRamp(0.001);
 
