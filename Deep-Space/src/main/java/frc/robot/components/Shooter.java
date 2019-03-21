@@ -1,23 +1,47 @@
 package frc.robot.components;
 
-import edu.wpi.first.wpilibj.VictorSP;
+import edu.wpi.first.wpilibj.PWMVictorSPX;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.Timer;
+
 public class Shooter{ 
-    
-    VictorSP motor = new VictorSP(4); 
-    VictorSP motor1 = new VictorSP(6); // Check position
-    SpeedControllerGroup shooter = new SpeedControllerGroup(motor, motor1);
-    /*
-        WIP
-        I coming back to this I just need to figure out how we are going to shoot the ball.
-    */
+    /**
+     *  A High level shooter object for a two motor intake and shooter
+     */
+    double latest;
+    public PWMVictorSPX leftMotor; 
+    public PWMVictorSPX rightMotor;
+    public SpeedControllerGroup shooter;
+    double motorTime = .5; // The default time the motor will spin for 
+
+    public Shooter(PWMVictorSPX leftMotor, PWMVictorSPX rightMotor, double motorTime){
+        this.leftMotor = leftMotor;
+        this.rightMotor = rightMotor; 
+        this.motorTime = motorTime;
+        this.shooter = new SpeedControllerGroup(leftMotor, rightMotor);
+    }
+
     public void setSpeed(double speed){
         shooter.set(speed);
     }
+
     public void shoot(){
-        shooter.set(.8);
+        double now = Timer.getFPGATimestamp();
+        if((now-latest) > motorTime){
+            latest = now;
+            shooter.set(0); 
+        }else{
+            shooter.set(.8);
+        }
     }
+
     public void intake(){
-        shooter.set(-.8);
+        double now = Timer.getFPGATimestamp();
+        if((now-latest) > motorTime){
+            latest = now;
+            shooter.set(0); 
+        }else{
+            shooter.set(-.8);
+        }
     }
 }

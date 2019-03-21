@@ -14,35 +14,29 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.components.Drivetrain;
 import frc.robot.components.OI;
 import frc.robot.components.Pnumatics;
-import frc.robot.Test;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import frc.robot.common.ButtonDebouncer;
 import frc.robot.components.Shooter;
-import frc.robot.components.LinearSlider;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PWMVictorSPX;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import frc.robot.common.TurnPID;
+import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.SerialPort.Port;
+import frc.robot.common.MotorRamp;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.cameraserver.CameraServer;
+//import frc.robot.common.Logger;
 
 /**
- * MOTOR CONTROLLERS
- * [] Accelamentor (speed)
- * 4 drive train Victor SP
- * 2 Victor SP for shooter 
- * 1 Victor SP for linear slider 
- * TODO
- * [] Pathfinder placed into the auto command
- * [] Camera Server 
- * [] Vision Processing 
- * [] Display data onto shuffle board 
- * [] learn about network tables
- * [] Create safety flags 
- * [] Multithreading 
- * [] The shooting pnumatics is just going to be on for ready to fire at an angle or off to collect 
- * [] Logger 
- * [] Test cases 
- * [] Maybe change the shuffle board color based on the alliance side
- */
+ * TODO:
+ *  [] Places logger points through out the files
+ *  [] Linear slider
+ *  [] Auto turn 
+ *  [] auto play generator based abstrasct moves 
+ *  [] Manual mode 
+ *  [] controll modes 
+ *  [] Display this data
+*/
+
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the TimedRobot
@@ -53,29 +47,26 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 public class Robot extends TimedRobot {
   Drivetrain drive;
   OI input;
-  Pnumatics peak;  
+  Pnumatics beak;  
   Pnumatics shooterPosition;
-  DoubleSolenoid peakSolenoid;
-  DoubleSolenoid shooterSolenoid; 
-  Test unitTest = new Test();
-  LinearSlider slider; 
   Shooter ballShooter; 
-  ButtonDebouncer peakButtonOpen; 
-  ButtonDebouncer peakButtonClose;
-  ButtonDebouncer sliderButtonRaise;
-  ButtonDebouncer sliderButtonLower;
-  ButtonDebouncer shoot;
-  ButtonDebouncer intake;
-  NetworkTableInstance defaultTableInit; 
-  NetworkTableInstance visionTableInit;
-  NetworkTable visionTable;
-  NetworkTable defaultTable;
-  NetworkTableEntry testEntry;
+  TurnPID driveTurnPID;
+  AHRS navXMicro; 
+  MotorRamp fowardRamp;
+  ButtonDebouncer beakButtonOpen; 
+  ButtonDebouncer beakButtonClose;
+  ButtonDebouncer shootButtton;
+  ButtonDebouncer intakeButton;
+  //NetworkTableInstance defaultTableInit; 
+  //NetworkTableInstance visionTableInit;
+  //NetworkTable visionTable;
+  //NetworkTable defaultTable;
   PowerDistributionPanel PDP; 
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
+  //Logger logger; 
 
 
   /**
@@ -84,41 +75,63 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    drive = new Drivetrain();
-    drive.setMotorsInverted();
-    input = new OI();
-    peakSolenoid = new DoubleSolenoid(0, 1);
-    shooterSolenoid = new DoubleSolenoid(2,3);
-    peak = new Pnumatics(peakSolenoid);
+    // Camera 
+    CameraServer.getInstance().startAutomaticCapture();
+    // Drivetrain
+    PWMVictorSPX driveMotorLeft = new PWMVictorSPX(1);
+    PWMVictorSPX driveMotorLeft1 = new PWMVictorSPX(3);
+    PWMVictorSPX driveMotorRight = new PWMVictorSPX(7);
+    PWMVictorSPX driveMotorRight1 = new PWMVictorSPX(6);
+
+    drive = new Drivetrain(driveMotorLeft, driveMotorLeft1, driveMotorRight, driveMotorRight1);
+    drive.invertRightMotors();
+    //Joysticks 
+    Joystick driverStick = new Joystick(0);
+    Joystick operatorStick = new Joystick(1);
+    input = new OI(driverStick, operatorStick);
+    // Pnumatics
+    DoubleSolenoid beakSolenoid = new DoubleSolenoid(4, 5);
+    DoubleSolenoid shooterSolenoid = new DoubleSolenoid(0,1);
+    beak = new Pnumatics(beakSolenoid);
     shooterPosition = new Pnumatics(shooterSolenoid);
-    slider = new LinearSlider();
-    ballShooter = new Shooter();
+    //    Shooter
+    PWMVictorSPX leftShooter = new PWMVictorSPX(4);
+    PWMVictorSPX rightShooter = new PWMVictorSPX(5);
+
+    ballShooter = new Shooter(leftShooter,rightShooter, .8);
+    // Motion
+    fowardRamp = new MotorRamp(0.001);
+
+    // NAV
+    navXMicro = new AHRS(Port.kUSB);
+    navXMicro.reset();
 
     // DataTables 
     //  Java side will hold the datatable server becuase it is on the roborio
+    /*
     defaultTableInit = NetworkTableInstance.getDefault();
     visionTableInit = NetworkTableInstance.create(); 
     defaultTable = defaultTableInit.getTable("datatables");
     visionTable = visionTableInit.getTable("vision");
     defaultTableInit.startClientTeam(6925);
-    visionTableInit.startClientTeam(6925);
-    
+    */
     // Debouncer 
-    peakButtonOpen = new ButtonDebouncer(input.driver,1, .5);
-    peakButtonClose = new ButtonDebouncer(input.driver, 2, .5);
-    sliderButtonRaise = new ButtonDebouncer(input.driver, 3, .5);
-    sliderButtonLower = new ButtonDebouncer(input.driver, 4, .5);
-    shoot = new ButtonDebouncer(input.driver, 5, .5);
-    intake = new ButtonDebouncer(input.driver, 6, .5);
-
+    beakButtonOpen = new ButtonDebouncer(input.operator,1, .5);
+    beakButtonClose = new ButtonDebouncer(input.operator, 2, .5);
+    shootButtton = new ButtonDebouncer(input.operator, 5, .3);
+    intakeButton = new ButtonDebouncer(input.operator, 6, .3);
     // PDP
-    PDP = new PowerDistributionPanel();
+    
+    PDP = new PowerDistributionPanel(0);
     PDP.clearStickyFaults();
-
+    
     // SmartDasboard 
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+
+    // Logger 
+    //logger = new Logger("dev/U/sda"); // Check this file path
   }
 
   /**
@@ -132,10 +145,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    SmartDashboard.putNumber("Linear Slider Height", slider.getHeight());
-    SmartDashboard.putBoolean("Linear Slider Raising", slider.isRaising());
-    SmartDashboard.putBoolean("Peak Open", peak.isOpen());
-    SmartDashboard.putBoolean("Shooter Position down", shooterPosition.isOpen());
   }
 
   /**
@@ -162,6 +171,15 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
+    double driveY = -input.driver.getRawAxis(1);
+    double driveX = input.driver.getRawAxis(0);
+    if (driveY < .2 && driveY > -.2) {
+      driveY = 0;
+    }
+    if (driveX < .2 && driveX > -.2) {
+      driveX = 0;
+    }
+    drive.m_Drive.arcadeDrive(driveX*.7, driveY * .7);
     switch (m_autoSelected) {
     case kCustomAuto:
       // Put custom auto code here
@@ -178,63 +196,83 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    // Double check to see if the x and y are corret with the joystick
-    // Get the correct button values
-    double driveY  = input.driver.getRawAxis(1);
+    double driveY  = -input.driver.getRawAxis(1);
     double driveX = input.driver.getRawAxis(0);
-    drive.m_Drive.arcadeDrive(driveY*.80, driveX*.80);
-    
-    if (input.driver.getRawButton(1)){
-      if(peakButtonOpen.isReady()){
-        peak.setFoward();
+    if(driveY < .2 && driveY >-.2){
+      driveY = 0;
+    }
+    if(driveX < .2 && driveX > -.2 ){
+      driveX = 0;
+    }
+    drive.m_Drive.arcadeDrive(driveX*.7, driveY*.9);
+
+    // Thread this to 200 ms for the speed controller 
+
+    if (input.operator.getRawButton(1)){
+      // Opens the beak
+      if(beakButtonOpen.isReady()){
+        //logger.info("Beak is open");
+        beak.setFoward();
       }
     }
-    if (input.driver.getRawButton(2)){
-      if(peakButtonClose.isReady()){
-        peak.setReversed();
+    if (input.operator.getRawButton(2)){
+      // Close the beak
+      if(beakButtonClose.isReady()){
+        //logger.info("Beak is closed");
+        beak.setReversed();
       }
     }
-    if (input.driver.getRawButton(3)){
-      if(sliderButtonRaise.isReady()){
-        slider.raise(); 
-      }
+    if (input.operator.getRawButton(5)){
+      // Shoot 
+      ballShooter.shooter.set(.8);
+    }else{
+      ballShooter.shooter.set(0);
     }
-    if (input.driver.getRawButton(4)){
-      if(sliderButtonLower.isReady()){
-        slider.lower();
-      }
+    if (input.operator.getRawButton(3)){
+      ballShooter.shooter.set(-.8);
+      // intake
+    }else{
+      ballShooter.shooter.set(0);
     }
-    if (input.driver.getRawButton(5)){
-      if(shoot.isReady()){
-        if(shooterPosition.m_solenoid.get() == DoubleSolenoid.Value.kForward){
+    if (input.operator.getRawButton(6)){
+      shooterPosition.m_solenoid.set(DoubleSolenoid.Value.kReverse);
+      // pnuamtics to shoot
+    }
+    if (input.operator.getRawButton(4)){
+      // pnumatics to intakes
+      shooterPosition.m_solenoid.set(DoubleSolenoid.Value.kForward);
+    }
+    // Automatic way that has not been tested 
+    /*
+    if (input.operator.getRawButton(3)){
+      // Check to see if the shooter is up and if so then it allow the user to shoot
+      if(shootButtton.isReady()){
+        if(shooterPosition.isState(DoubleSolenoid.Value.kForward) || shooterPosition.isState(DoubleSolenoid.Value.kOff)){
+          //logger.info("Shoot the ball");
+          ballShooter.shoot();
+        }else{
           shooterPosition.setReversed();
         }
-        if(shooterPosition.isReady()){
-          ballShooter.shoot();
-        }
       }
     }
-    if (input.driver.getRawButton(6)) {
-      if (intake.isReady()) {
-        shooterPosition.setFoward();
-        if (shooterPosition.m_solenoid.get() == DoubleSolenoid.Value.kReverse) {
-          shooterPosition.setFoward();
-        }
-        if (shooterPosition.isReady()) {
+    if (input.operator.getRawButton(4)) {
+      // Check to see if the shooter is down and if so then will allow the user to intake
+      if (intakeButton.isReady()) {
+        if(shooterPosition.isState(DoubleSolenoid.Value.kReverse) || shooterPosition.isState(DoubleSolenoid.Value.kOff)){
+          //logger.info("Intaked a book");
           ballShooter.intake();
-        }
+        }else{ shooterPosition.setFoward();}
       }
     }
-
+    */
   }
   /**
    * This function is called periodically during test mode.
    */
   @Override
   public void testPeriodic() {
-    if(!unitTest.isTestFinished){
-      // Runs the test cases 
-      unitTest.testCompressor();
-    }
+
   }
 }
+
+
