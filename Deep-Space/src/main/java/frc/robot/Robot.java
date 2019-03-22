@@ -17,6 +17,7 @@ import frc.robot.components.Pnumatics;
 import frc.robot.common.ButtonDebouncer;
 import frc.robot.components.Shooter;
 import edu.wpi.first.wpilibj.PWMVictorSPX;
+import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import frc.robot.common.TurnPID;
 import com.kauailabs.navx.frc.AHRS;
@@ -57,6 +58,7 @@ public class Robot extends TimedRobot {
   ButtonDebouncer beakButtonClose;
   ButtonDebouncer shootButtton;
   ButtonDebouncer intakeButton;
+  Spark shooterLift; 
   //NetworkTableInstance defaultTableInit; 
   //NetworkTableInstance visionTableInit;
   //NetworkTable visionTable;
@@ -95,6 +97,7 @@ public class Robot extends TimedRobot {
     beak = new Pnumatics(beakSolenoid);
     shooterPosition = new Pnumatics(shooterSolenoid);
     //    Shooter
+    shooterLift = new Spark(0);
     PWMVictorSPX leftShooter = new PWMVictorSPX(4);
     PWMVictorSPX rightShooter = new PWMVictorSPX(5);
 
@@ -235,12 +238,18 @@ public class Robot extends TimedRobot {
       ballShooter.shooter.set(0);
     }
     if (input.operator.getRawButton(6)){
-      shooterPosition.m_solenoid.set(DoubleSolenoid.Value.kReverse);
+      shooterLift.set(.4);
+      //shooterPosition.m_solenoid.set(DoubleSolenoid.Value.kReverse);
       // pnuamtics to shoot
+    }else{
+      shooterLift.set(0);
     }
     if (input.operator.getRawButton(4)){
       // pnumatics to intakes
-      shooterPosition.m_solenoid.set(DoubleSolenoid.Value.kForward);
+      shooterLift.set(-.4);
+      //shooterPosition.m_solenoid.set(DoubleSolenoid.Value.kForward);
+    }else{
+      shooterLift.set(0);
     }
     // Automatic way that has not been tested 
     /*
