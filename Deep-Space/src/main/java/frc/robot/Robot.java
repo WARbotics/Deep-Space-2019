@@ -78,7 +78,7 @@ public class Robot extends TimedRobot {
     // Camera 
     CameraServer.getInstance().startAutomaticCapture();
     // Drivetrain
-    PWMVictorSPX driveMotorLeft = new PWMVictorSPX(1);
+    PWMVictorSPX driveMotorLeft = new PWMVictorSPX(4);
     PWMVictorSPX driveMotorLeft1 = new PWMVictorSPX(3);
     PWMVictorSPX driveMotorRight = new PWMVictorSPX(7);
     PWMVictorSPX driveMotorRight1 = new PWMVictorSPX(6);
@@ -95,7 +95,7 @@ public class Robot extends TimedRobot {
     beak = new Pnumatics(beakSolenoid);
     shooterPosition = new Pnumatics(shooterSolenoid);
     //    Shooter
-    PWMVictorSPX leftShooter = new PWMVictorSPX(4);
+    PWMVictorSPX leftShooter = new PWMVictorSPX(1);
     PWMVictorSPX rightShooter = new PWMVictorSPX(5);
 
     ballShooter = new Shooter(leftShooter,rightShooter, .8);
@@ -171,24 +171,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    double driveY = -input.driver.getRawAxis(1);
-    double driveX = input.driver.getRawAxis(0);
-    if (driveY < .2 && driveY > -.2) {
-      driveY = 0;
-    }
-    if (driveX < .2 && driveX > -.2) {
-      driveX = 0;
-    }
-    drive.m_Drive.arcadeDrive(driveX*.7, driveY * .7);
-    switch (m_autoSelected) {
-    case kCustomAuto:
-      // Put custom auto code here
-      break;
-    case kDefaultAuto:
-    default:
-      // Put default auto code here
-      break;
-    }
+    teleopPeriodic();
   }
 
   /**
@@ -198,10 +181,10 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     double driveY  = -input.driver.getRawAxis(1);
     double driveX = input.driver.getRawAxis(0);
-    if(driveY < .2 && driveY >-.2){
+    if(driveY < .1 && driveY >-.1){
       driveY = 0;
     }
-    if(driveX < .2 && driveX > -.2 ){
+    if(driveX < .1 && driveX > -.1 ){
       driveX = 0;
     }
     drive.m_Drive.arcadeDrive(driveX*.7, driveY*.9);
