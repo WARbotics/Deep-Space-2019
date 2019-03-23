@@ -66,6 +66,9 @@ public class Robot extends TimedRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
+
+  private final int SHOOTER_UP = 5;
+  private final int SHOOTER_DOWN = 3;
   //Logger logger; 
 
 
@@ -88,6 +91,7 @@ public class Robot extends TimedRobot {
     //Joysticks 
     Joystick driverStick = new Joystick(0);
     Joystick operatorStick = new Joystick(1);
+    
     input = new OI(driverStick, operatorStick);
     // Pnumatics
     DoubleSolenoid beakSolenoid = new DoubleSolenoid(4, 5);
@@ -97,8 +101,11 @@ public class Robot extends TimedRobot {
     //    Shooter
     PWMVictorSPX leftShooter = new PWMVictorSPX(1);
     PWMVictorSPX rightShooter = new PWMVictorSPX(5);
+    PWMVictorSPX shooterWinch = new PWMVictorSPX(0);
 
-    ballShooter = new Shooter(leftShooter,rightShooter, .8);
+    ballShooter = new Shooter(leftShooter,rightShooter, .8, shooterWinch);
+    Joystick shooterJoystick = new Joystick(5);
+
     // Motion
     fowardRamp = new MotorRamp(0.001);
 
@@ -224,6 +231,14 @@ public class Robot extends TimedRobot {
     if (input.operator.getRawButton(4)){
       // pnumatics to intakes
       shooterPosition.m_solenoid.set(DoubleSolenoid.Value.kForward);
+    }
+
+    if (input.operator.getRawButton(SHOOTER_UP)) {
+      ballShooter.setWinchSpeed(-0.1);
+    } else if (input.operator.getRawButton(SHOOTER_DOWN)) {
+      ballShooter.setWinchSpeed(0.1);
+    } else {
+      ballShooter.setWinchSpeed(0);
     }
     // Automatic way that has not been tested 
     /*
