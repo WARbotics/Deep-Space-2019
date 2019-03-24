@@ -27,7 +27,6 @@ import edu.wpi.first.cameraserver.CameraServer;
 //import frc.robot.common.Logger;
 
 /**
- * TODO:
  *  [] Places logger points through out the files
  *  [] Linear slider
  *  [] Auto turn 
@@ -67,8 +66,8 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-  private final int SHOOTER_UP = 5;
-  private final int SHOOTER_DOWN = 3;
+  //private final int SHOOTER_UP = 5;
+  //private final int SHOOTER_DOWN = 4;
   //Logger logger; 
 
 
@@ -104,8 +103,9 @@ public class Robot extends TimedRobot {
     PWMVictorSPX shooterWinch = new PWMVictorSPX(0);
 
     ballShooter = new Shooter(leftShooter,rightShooter, .8, shooterWinch);
-    Joystick shooterJoystick = new Joystick(5);
+    
 
+    
     // Motion
     fowardRamp = new MotorRamp(0.001);
 
@@ -211,15 +211,15 @@ public class Robot extends TimedRobot {
         //logger.info("Beak is closed");
         beak.setReversed();
       }
-    }
+    } 
     if (input.operator.getRawButton(5)){
       // Shoot 
-      ballShooter.shooter.set(.8);
+      ballShooter.shooter.set(.25);
     }else{
       ballShooter.shooter.set(0);
     }
     if (input.operator.getRawButton(3)){
-      ballShooter.shooter.set(-.8);
+      ballShooter.shooter.set(-.23);
       // intake
     }else{
       ballShooter.shooter.set(0);
@@ -233,10 +233,10 @@ public class Robot extends TimedRobot {
       shooterPosition.m_solenoid.set(DoubleSolenoid.Value.kForward);
     }
 
-    if (input.operator.getRawButton(SHOOTER_UP)) {
-      ballShooter.setWinchSpeed(-0.1);
-    } else if (input.operator.getRawButton(SHOOTER_DOWN)) {
-      ballShooter.setWinchSpeed(0.1);
+    if (input.operator.getRawButton(6)) {
+      ballShooter.setWinchSpeed(-1.50);
+    } else if (input.operator.getRawButton(4)) {
+      ballShooter.setWinchSpeed(1.50);
     } else {
       ballShooter.setWinchSpeed(0);
     }
