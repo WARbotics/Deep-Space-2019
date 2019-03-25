@@ -56,6 +56,7 @@ public class Robot extends TimedRobot {
   ButtonDebouncer beakButtonClose;
   ButtonDebouncer shootButtton;
   ButtonDebouncer intakeButton;
+  PWMVictorSPX shooterWinch;
   //NetworkTableInstance defaultTableInit; 
   //NetworkTableInstance visionTableInit;
   //NetworkTable visionTable;
@@ -94,15 +95,13 @@ public class Robot extends TimedRobot {
     input = new OI(driverStick, operatorStick);
     // Pnumatics
     DoubleSolenoid beakSolenoid = new DoubleSolenoid(4, 5);
-    DoubleSolenoid shooterSolenoid = new DoubleSolenoid(0,1);
     beak = new Pnumatics(beakSolenoid);
-    shooterPosition = new Pnumatics(shooterSolenoid);
     //    Shooter
     PWMVictorSPX leftShooter = new PWMVictorSPX(1);
     PWMVictorSPX rightShooter = new PWMVictorSPX(5);
-    PWMVictorSPX shooterWinch = new PWMVictorSPX(0);
+    shooterWinch = new PWMVictorSPX(0);
 
-    ballShooter = new Shooter(leftShooter,rightShooter, .8, shooterWinch);
+    ballShooter = new Shooter(leftShooter,rightShooter, .8);
     
 
     
@@ -219,50 +218,19 @@ public class Robot extends TimedRobot {
       ballShooter.shooter.set(0);
     }
     if (input.operator.getRawButton(3)){
-      ballShooter.shooter.set(-.23);
+      ballShooter.shooter.set(-.5);
       // intake
     }else{
       ballShooter.shooter.set(0);
     }
-    if (input.operator.getRawButton(6)){
-      shooterPosition.m_solenoid.set(DoubleSolenoid.Value.kReverse);
-      // pnuamtics to shoot
-    }
-    if (input.operator.getRawButton(4)){
-      // pnumatics to intakes
-      shooterPosition.m_solenoid.set(DoubleSolenoid.Value.kForward);
-    }
 
     if (input.operator.getRawButton(6)) {
-      ballShooter.setWinchSpeed(-1.50);
+      shooterWinch.set(-.5);
     } else if (input.operator.getRawButton(4)) {
-      ballShooter.setWinchSpeed(1.50);
+      shooterWinch.set(.5);
     } else {
-      ballShooter.setWinchSpeed(0);
+      shooterWinch.set(0);
     }
-    // Automatic way that has not been tested 
-    /*
-    if (input.operator.getRawButton(3)){
-      // Check to see if the shooter is up and if so then it allow the user to shoot
-      if(shootButtton.isReady()){
-        if(shooterPosition.isState(DoubleSolenoid.Value.kForward) || shooterPosition.isState(DoubleSolenoid.Value.kOff)){
-          //logger.info("Shoot the ball");
-          ballShooter.shoot();
-        }else{
-          shooterPosition.setReversed();
-        }
-      }
-    }
-    if (input.operator.getRawButton(4)) {
-      // Check to see if the shooter is down and if so then will allow the user to intake
-      if (intakeButton.isReady()) {
-        if(shooterPosition.isState(DoubleSolenoid.Value.kReverse) || shooterPosition.isState(DoubleSolenoid.Value.kOff)){
-          //logger.info("Intaked a book");
-          ballShooter.intake();
-        }else{ shooterPosition.setFoward();}
-      }
-    }
-    */
   }
   /**
    * This function is called periodically during test mode.

@@ -14,15 +14,11 @@ public class Shooter{
     public SpeedControllerGroup shooter;
     double motorTime = .5; // The default time the motor will spin for 
 
-    public PWMVictorSPX shooterWinch;
-
-    public Shooter(PWMVictorSPX leftMotor, PWMVictorSPX rightMotor,
-                                     double motorTime, PWMVictorSPX shooterWinch){
+    public Shooter(PWMVictorSPX leftMotor, PWMVictorSPX rightMotor, double motorTime){
         this.leftMotor = leftMotor;
         this.rightMotor = rightMotor; 
         this.motorTime = motorTime;
         this.shooter = new SpeedControllerGroup(leftMotor, rightMotor);
-        this.shooterWinch = shooterWinch;
     }
 
     public void setSpeed(double speed){
@@ -47,9 +43,5 @@ public class Shooter{
         }else{
             shooter.set(-.8);
         }
-    }
-
-    public void setWinchSpeed (double speed) {
-        shooterWinch.set(speed);
     }
 }
