@@ -16,6 +16,7 @@ import frc.robot.components.OI;
 import frc.robot.components.Pnumatics;
 import frc.robot.common.ButtonDebouncer;
 import frc.robot.components.Shooter;
+import frc.robot.components.OI.DriveModes;
 import edu.wpi.first.wpilibj.PWMVictorSPX;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import frc.robot.common.TurnPID;
@@ -187,16 +188,47 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     double driveY  = -input.driver.getRawAxis(1);
     double driveX = input.driver.getRawAxis(0);
-    if(driveY < .1 && driveY >-.1){
-      driveY = 0;
+    double rightDriveY = input.driver.getRawAxis(3);
+    if(input.driveMode == DriveModes.SPEED){
+      // Speed
+      if (driveY < .1 && driveY > -.1) {
+        driveY = 0;
+      }
+      if (driveX < .1 && driveX > -.1) {
+        driveX = 0;
+      }
+      drive.m_Drive.arcadeDrive(driveX*.85, driveY*.85);
+    }else if(input.driveMode == DriveModes.PRECISION){
+      // Precision
+      if(driveY > .4){
+        driveY = .4;
+      }else if(driveY< -.4){
+        driveY = -.4;
+      }
+      if(rightDriveY > .4){
+        rightDriveY = .4;
+      }else if(rightDriveY < -.4){
+        rightDriveY = .4;
+      }
+      drive.m_Drive.tankDrive(driveY, rightDriveY);
+    }else{
+      // Defult drive mode;
+      if (driveY < .1 && driveY > -.1) {
+        driveY = 0;
+      }
+      if (driveX < .1 && driveX > -.1) {
+        driveX = 0;
+      }
+      drive.m_Drive.arcadeDrive(driveX * .7, driveY * .9);
     }
-    if(driveX < .1 && driveX > -.1 ){
-      driveX = 0;
-    }
-    drive.m_Drive.arcadeDrive(driveX*.7, driveY*.9);
-
     // Thread this to 200 ms for the speed controller 
 
+    if (input.driver.getRawButton(1)){
+      input.setDriveMode(DriveModes.PRECISION);
+    }
+    if (input.driver.getRawButton(2)){
+      input.setDriveMode(DriveModes.DEFAULT);
+    }
     if (input.operator.getRawButton(1)){
       // Opens the beak
       if(beakButtonOpen.isReady()){
