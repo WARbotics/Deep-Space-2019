@@ -7,7 +7,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -17,7 +16,7 @@ import frc.robot.components.Pnumatics;
 import frc.robot.common.ButtonDebouncer;
 import frc.robot.components.Shooter;
 import frc.robot.components.OI.DriveModes;
-import edu.wpi.first.wpilibj.PWMVictorSPX;
+import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import frc.robot.common.TurnPID;
 import com.kauailabs.navx.frc.AHRS;
@@ -25,6 +24,8 @@ import edu.wpi.first.wpilibj.SerialPort.Port;
 import frc.robot.common.MotorRamp;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.VictorSP;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
 //import frc.robot.common.Logger;
 
 /**
@@ -48,16 +49,17 @@ public class Robot extends TimedRobot {
   Drivetrain drive;
   OI input;
   Pnumatics beak;  
-  Pnumatics shooterPosition;
-  Shooter ballShooter; 
   TurnPID driveTurnPID;
   AHRS navXMicro; 
   MotorRamp fowardRamp;
   ButtonDebouncer beakButtonOpen; 
   ButtonDebouncer beakButtonClose;
   ButtonDebouncer shootButtton;
-  ButtonDebouncer intakeButton;
-  PWMVictorSPX shooterWinch;
+  ButtonDebouncer intakeButton; 
+  Spark ballShooterLeft;
+  Spark ballShooterRight;
+  SpeedControllerGroup shooter;
+  Spark basket;
   //NetworkTableInstance defaultTableInit; 
   //NetworkTableInstance visionTableInit;
   //NetworkTable visionTable;
@@ -79,14 +81,13 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    // Camera 
-    CameraServer.getInstance().startAutomaticCapture();
-    // Drivetrain
-    PWMVictorSPX driveMotorLeft = new PWMVictorSPX(4);
-    PWMVictorSPX driveMotorLeft1 = new PWMVictorSPX(3);
-    PWMVictorSPX driveMotorRight = new PWMVictorSPX(7);
-    PWMVictorSPX driveMotorRight1 = new PWMVictorSPX(6);
 
+    // Drivetrain
+    VictorSP driveMotorLeft = new VictorSP(1);
+    VictorSP driveMotorLeft1 = new VictorSP(2);
+    VictorSP driveMotorRight = new VictorSP(3);
+    VictorSP driveMotorRight1 = new VictorSP(4);
+    
     drive = new Drivetrain(driveMotorLeft, driveMotorLeft1, driveMotorRight, driveMotorRight1);
     drive.invertRightMotors();
     //Joysticks 
@@ -95,17 +96,12 @@ public class Robot extends TimedRobot {
     
     input = new OI(driverStick, operatorStick);
     // Pnumatics
-    DoubleSolenoid beakSolenoid = new DoubleSolenoid(4, 5);
-    beak = new Pnumatics(beakSolenoid);
+  
     //    Shooter
-    PWMVictorSPX leftShooter = new PWMVictorSPX(1);
-    PWMVictorSPX rightShooter = new PWMVictorSPX(5);
-    shooterWinch = new PWMVictorSPX(0);
-
-    ballShooter = new Shooter(leftShooter,rightShooter, .8);
-    
-
-    
+    ballShooterLeft = new Spark(6);
+    ballShooterRight = new Spark(7);
+    shooter = new SpeedControllerGroup(ballShooterLeft, ballShooterRight);
+    basket = new Spark(8);
     // Motion
     fowardRamp = new MotorRamp(0.001);
 
@@ -128,9 +124,6 @@ public class Robot extends TimedRobot {
     shootButtton = new ButtonDebouncer(input.operator, 5, .3);
     intakeButton = new ButtonDebouncer(input.operator, 6, .3);
     // PDP
-    
-    PDP = new PowerDistributionPanel(0);
-    PDP.clearStickyFaults();
     
     // SmartDasboard 
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
@@ -200,15 +193,15 @@ public class Robot extends TimedRobot {
       drive.m_Drive.arcadeDrive(driveX*.85, driveY*.85);
     }else if(input.driveMode == DriveModes.PRECISION){
       // Precision
-      if(driveY > .4){
-        driveY = .4;
-      }else if(driveY< -.4){
-        driveY = -.4;
+      if(driveY > .6){
+        driveY = .6;
+      }else if(driveY< -.6){
+        driveY = -.6;
       }
-      if(rightDriveY > .4){
-        rightDriveY = .4;
-      }else if(rightDriveY < -.4){
-        rightDriveY = .4;
+      if(rightDriveY > .6){
+        rightDriveY = .6;
+      }else if(rightDriveY < -.6){
+        rightDriveY = -.6;
       }
       drive.m_Drive.tankDrive(driveY, rightDriveY);
     }else{
@@ -219,7 +212,7 @@ public class Robot extends TimedRobot {
       if (driveX < .1 && driveX > -.1) {
         driveX = 0;
       }
-      drive.m_Drive.arcadeDrive(driveX * .7, driveY * .9);
+      drive.m_Drive.arcadeDrive(driveX*.75, driveY * .9);
     }
     // Thread this to 200 ms for the speed controller 
 
@@ -229,40 +222,37 @@ public class Robot extends TimedRobot {
     if (input.driver.getRawButton(2)){
       input.setDriveMode(DriveModes.DEFAULT);
     }
-    if (input.operator.getRawButton(1)){
-      // Opens the beak
-      if(beakButtonOpen.isReady()){
-        //logger.info("Beak is open");
-        beak.setFoward();
-      }
+    if (input.driver.getRawButton(3)){
+      input.setDriveMode(DriveModes.SPEED);
     }
-    if (input.operator.getRawButton(2)){
-      // Close the beak
-      if(beakButtonClose.isReady()){
-        //logger.info("Beak is closed");
-        beak.setReversed();
-      }
-    } 
+    if (input.driver.getRawButton(7)){
+      basket.set(.7);
+    }else{basket.set(0);}
+    if (input.driver.getRawButton(6)){
+      basket.set(-.7);
+    }else{basket.set(0);}
+    if(input.driver.getRawButton(5)){
+      shooter.set(1);
+    }else{shooter.set(0);}
+    if(input.driver.getRawButton(4)){
+      shooter.set(-1);
+    }else{shooter.set(0);}
+  
+    /*
     if (input.operator.getRawButton(5)){
       // Shoot 
-      ballShooter.shooter.set(.25);
+      ballShooter.shooter.set(-.75);
+      
     }else{
-      ballShooter.shooter.set(0);
+      ballShooter.setSpeed(0);
     }
     if (input.operator.getRawButton(3)){
-      ballShooter.shooter.set(-.5);
+      ballShooter.shooter.set(.75);
       // intake
     }else{
       ballShooter.shooter.set(0);
     }
-
-    if (input.operator.getRawButton(6)) {
-      shooterWinch.set(-.5);
-    } else if (input.operator.getRawButton(4)) {
-      shooterWinch.set(.5);
-    } else {
-      shooterWinch.set(0);
-    }
+    */
   }
   /**
    * This function is called periodically during test mode.

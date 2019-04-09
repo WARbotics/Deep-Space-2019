@@ -6,26 +6,26 @@ public class MotorRamp{
     /**
      *  MotorRamp 
      */
-    double dChange;
-    double topChange = .01;
+    double acceleration;
+    double maxChange = .01;
     double speed; 
 
-    public MotorRamp(double dChange){
-        this.dChange = dChange; 
+    public MotorRamp(double acceleration){
+        this.acceleration = acceleration; 
     }
 
     public double getSpeed(double input){
-        if(input > (speed+ dChange)){
-            if((speed+dChange)> .4){
-                speed+= topChange;
+        if(input > (speed+acceleration)){
+            if((speed+acceleration)> .5){
+                 speed+= maxChange;
             }else{
-                speed += dChange;
+                speed+=acceleration;
             }
-        }else if(input < (speed - dChange)){
-            if((speed-dChange)< -.4){
-                speed += topChange;
+        }else if(input < (speed - acceleration)){
+            if((speed-acceleration)< -.5){
+                speed += maxChange;
             }else{
-                speed -= dChange;
+                speed += acceleration;
             }
         }else{
             speed = input;

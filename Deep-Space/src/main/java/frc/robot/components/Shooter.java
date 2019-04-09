@@ -9,17 +9,11 @@ public class Shooter{
      *  A High level shooter object for a two motor intake and shooter
      */
     double latest;
-    public PWMVictorSPX leftMotor; 
-    public PWMVictorSPX rightMotor;
-    public SpeedControllerGroup shooter;
-    double motorTime = .5; // The default time the motor will spin for 
+    public PWMVictorSPX leftMotor = new PWMVictorSPX(1); 
+    public PWMVictorSPX rightMotor = new PWMVictorSPX(5);
+    public SpeedControllerGroup shooter = new SpeedControllerGroup(leftMotor, rightMotor);
 
-    public Shooter(PWMVictorSPX leftMotor, PWMVictorSPX rightMotor, double motorTime){
-        this.leftMotor = leftMotor;
-        this.rightMotor = rightMotor; 
-        this.motorTime = motorTime;
-        this.shooter = new SpeedControllerGroup(leftMotor, rightMotor);
-    }
+    double motorTime = .5; // The default time the motor will spin for 
 
     public void setSpeed(double speed){
         shooter.set(speed);
