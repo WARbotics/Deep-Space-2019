@@ -106,8 +106,6 @@ public class Robot extends TimedRobot {
     fowardRamp = new MotorRamp(0.001);
 
     // NAV
-    navXMicro = new AHRS(Port.kUSB);
-    navXMicro.reset();
 
     // DataTables 
     //  Java side will hold the datatable server becuase it is on the roborio
@@ -216,7 +214,7 @@ public class Robot extends TimedRobot {
     }
     // Thread this to 200 ms for the speed controller 
 
-    if (input.driver.getRawButton(1)){
+    if (input.driver.getRawButton(9)){
       input.setDriveMode(DriveModes.PRECISION);
     }
     if (input.driver.getRawButton(2)){
@@ -225,16 +223,13 @@ public class Robot extends TimedRobot {
     if (input.driver.getRawButton(3)){
       input.setDriveMode(DriveModes.SPEED);
     }
-    if (input.driver.getRawButton(7)){
-      basket.set(.7);
-    }else{basket.set(0);}
-    if (input.driver.getRawButton(6)){
-      basket.set(-.7);
+    if (input.driver.getRawButton(1)){
+      basket.set(7);
     }else{basket.set(0);}
     if(input.driver.getRawButton(5)){
       shooter.set(1);
     }else{shooter.set(0);}
-    if(input.driver.getRawButton(4)){
+    if(input.driver.getRawButton(8)){
       shooter.set(-1);
     }else{shooter.set(0);}
   
