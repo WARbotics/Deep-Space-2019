@@ -1,12 +1,12 @@
 package frc.robot.common; 
 
-public class LinearPID{
+public class PID{
     double P, I, D;
     float setPoint = 0;
-    int integral, previous_error;
-    double rcw;
+    double integral, previous_error;
+    double rate;
 
-    public LinearPID(double P, double I, double D){
+    public PID(double P, double I, double D){
         this.P = P; 
         this.I = I;
         this.D = D; 
@@ -16,14 +16,14 @@ public class LinearPID{
         this.setPoint = setPoint;
     }
 
-    public void PID(float actual){
+    public void setActual(double actual){
         double error = (setPoint - actual);
-        this.integral += (error * .02);
+        this.integral += (error * I);
         double derivative = (error - this.previous_error) /.02;
-        this.rcw = P * error + I * this.integral + D *derivative;
+        this.rate = (P * error) + (I * this.integral)+ (D *derivative);
     }
 
-    public double getRCW() {
-        return this.rcw;
+    public double getRate() {
+        return this.rate;
     }
 }

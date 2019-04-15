@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.SerialPort.Port;
 import frc.robot.common.MotorRamp;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.cameraserver.CameraServer;
+import frc.robot.common.PID;
 //import frc.robot.common.Logger;
 
 /**
@@ -58,6 +59,7 @@ public class Robot extends TimedRobot {
   ButtonDebouncer shootButtton;
   ButtonDebouncer intakeButton;
   PWMVictorSPX shooterWinch;
+  PID drivetrainPID;
   //NetworkTableInstance defaultTableInit; 
   //NetworkTableInstance visionTableInit;
   //NetworkTable visionTable;
@@ -86,6 +88,7 @@ public class Robot extends TimedRobot {
     PWMVictorSPX driveMotorLeft1 = new PWMVictorSPX(3);
     PWMVictorSPX driveMotorRight = new PWMVictorSPX(7);
     PWMVictorSPX driveMotorRight1 = new PWMVictorSPX(6);
+    drivetrainPID = new PID(.125, 0, .03);
 
     drive = new Drivetrain(driveMotorLeft, driveMotorLeft1, driveMotorRight, driveMotorRight1);
     drive.invertRightMotors();
@@ -110,9 +113,10 @@ public class Robot extends TimedRobot {
     fowardRamp = new MotorRamp(0.001);
 
     // NAV
+    /*
     navXMicro = new AHRS(Port.kUSB);
     navXMicro.reset();
-
+    */
     // DataTables 
     //  Java side will hold the datatable server becuase it is on the roborio
     /*
@@ -128,10 +132,10 @@ public class Robot extends TimedRobot {
     shootButtton = new ButtonDebouncer(input.operator, 5, .3);
     intakeButton = new ButtonDebouncer(input.operator, 6, .3);
     // PDP
-    
+    /*
     PDP = new PowerDistributionPanel(0);
     PDP.clearStickyFaults();
-    
+    */
     // SmartDasboard 
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
@@ -188,6 +192,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     double driveY  = -input.driver.getRawAxis(1);
     double driveX = input.driver.getRawAxis(0);
+    double zRotation = input.driver.getRawAxis(3);
     double rightDriveY = input.driver.getRawAxis(3);
     if(input.driveMode == DriveModes.SPEED){
       // Speed
@@ -219,7 +224,10 @@ public class Robot extends TimedRobot {
       if (driveX < .1 && driveX > -.1) {
         driveX = 0;
       }
-      drive.m_Drive.arcadeDrive(driveX * .7, driveY * .9);
+      drivetrainPID.setActual(driveY*.9);
+      System.out.println("PID: "+drivetrainPID.getRate());
+      System.out.println("zRotation: "+ zRotation);
+      //drive.m_Drive.arcadeDrive(drivetrainPID.getRate(), zRotation * .9);
     }
     // Thread this to 200 ms for the speed controller 
 
