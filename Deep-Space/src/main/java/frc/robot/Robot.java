@@ -236,10 +236,10 @@ public class Robot extends TimedRobot {
       if (driveX < .1 && driveX > -.1) {
         driveX = 0;
       }
-      drivetrainPID.setActual(driveY*.9);
+      drivetrainPID.setActual(driveY*.75);
       System.out.println("PID: "+drivetrainPID.getRate());
       System.out.println("zRotation: "+ zRotation);
-      drive.m_Drive.curvatureDrive(drivetrainPID.getRate(), zRotation * .9, false);
+      drive.m_Drive.curvatureDrive(drivetrainPID.getRate(), -zRotation * .8, false);
     }
     // Thread this to 200 ms for the speed controller 
 
