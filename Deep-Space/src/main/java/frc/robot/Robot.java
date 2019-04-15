@@ -9,6 +9,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.components.Drivetrain;
@@ -60,6 +61,7 @@ public class Robot extends TimedRobot {
   ButtonDebouncer intakeButton;
   PWMVictorSPX shooterWinch;
   PID drivetrainPID;
+  double lastestAutoTime;
   //NetworkTableInstance defaultTableInit; 
   //NetworkTableInstance visionTableInit;
   //NetworkTable visionTable;
@@ -107,7 +109,6 @@ public class Robot extends TimedRobot {
 
     ballShooter = new Shooter(leftShooter,rightShooter, .8);
     
-
     
     // Motion
     fowardRamp = new MotorRamp(0.001);
@@ -182,7 +183,18 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    teleopPeriodic();
+    switch(m_autoSelected){
+      case kDefaultAuto:
+        teleopPeriodic();
+      case kCustomAuto:
+        double current = Timer.getFPGATimestamp();
+        double lastest = 0;
+
+        if((current - lastest) >= .5){
+          drive.m_Drive.arcadeDrive(.3, 0);
+          lastest = current;
+        }
+    }
   }
 
   /**
@@ -227,7 +239,7 @@ public class Robot extends TimedRobot {
       drivetrainPID.setActual(driveY*.9);
       System.out.println("PID: "+drivetrainPID.getRate());
       System.out.println("zRotation: "+ zRotation);
-      //drive.m_Drive.arcadeDrive(drivetrainPID.getRate(), zRotation * .9);
+      drive.m_Drive.curvatureDrive(drivetrainPID.getRate(), zRotation * .9, false);
     }
     // Thread this to 200 ms for the speed controller 
 
