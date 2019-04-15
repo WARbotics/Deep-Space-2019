@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.SerialPort.Port;
 import frc.robot.common.MotorRamp;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.cameraserver.CameraServer;
+import frc.robot.common.PID;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 //import frc.robot.common.Logger;
@@ -60,6 +61,7 @@ public class Robot extends TimedRobot {
   Spark ballShooterRight;
   SpeedControllerGroup shooter;
   Spark basket;
+  PID drivetrainPID;
   //NetworkTableInstance defaultTableInit; 
   //NetworkTableInstance visionTableInit;
   //NetworkTable visionTable;
@@ -89,14 +91,13 @@ public class Robot extends TimedRobot {
     VictorSP driveMotorRight1 = new VictorSP(4);
     
     drive = new Drivetrain(driveMotorLeft, driveMotorLeft1, driveMotorRight, driveMotorRight1);
-    drive.invertRightMotors();
     //Joysticks 
     Joystick driverStick = new Joystick(0);
     Joystick operatorStick = new Joystick(1);
     
     input = new OI(driverStick, operatorStick);
     // Pnumatics
-  
+    drivetrainPID = new PID(.1, 0, 0.01);
     //    Shooter
     ballShooterLeft = new Spark(6);
     ballShooterRight = new Spark(7);
@@ -180,6 +181,7 @@ public class Robot extends TimedRobot {
     double driveY  = -input.driver.getRawAxis(1);
     double driveX = input.driver.getRawAxis(0);
     double rightDriveY = input.driver.getRawAxis(3);
+    double zRotation = input.driver.getRawAxis(2);
     if(input.driveMode == DriveModes.SPEED){
       // Speed
       if (driveY < .1 && driveY > -.1) {
@@ -207,14 +209,17 @@ public class Robot extends TimedRobot {
       if (driveY < .1 && driveY > -.1) {
         driveY = 0;
       }
-      if (driveX < .1 && driveX > -.1) {
-        driveX = 0;
+      if (zRotation < .1 && zRotation > -.1) {
+        zRotation = 0;
       }
-      drive.m_Drive.arcadeDrive(driveX*.75, driveY * .9);
+      drivetrainPID.setActual(-driveY * .75);
+      System.out.println("PID: " + drivetrainPID.getRate());
+      System.out.println("zRotation: " + -zRotation);
+      drive.m_Drive.curvatureDrive(drivetrainPID.getRate(), zRotation, false);
     }
     // Thread this to 200 ms for the speed controller 
 
-    if (input.driver.getRawButton(9)){
+    if (input.driver.getRawButton(1)){
       input.setDriveMode(DriveModes.PRECISION);
     }
     if (input.driver.getRawButton(2)){
@@ -223,7 +228,7 @@ public class Robot extends TimedRobot {
     if (input.driver.getRawButton(3)){
       input.setDriveMode(DriveModes.SPEED);
     }
-    if (input.driver.getRawButton(1)){
+    if (input.driver.getRawButton(4)){
       basket.set(7);
     }else{basket.set(0);}
     if(input.driver.getRawButton(5)){

@@ -1,14 +1,12 @@
 package frc.robot.components;
 
 import  edu.wpi.first.wpilibj.PWMVictorSPX;
-import frc.robot.common.LinearPID;
 
 public class LinearSlider{
     /**
      * LinerSlider object used with one motor
      */
-    public PWMVictorSPX motor; // Check if the motor port is correct
-    LinearPID PID = new LinearPID(0, 0, 0); // Tune this
+    public PWMVictorSPX motor; // Check if the motor port is correctTune this
     public float height = 0; // Data from a potentionometer that we dont  have  <--- need to implement
     double maxHeight; // Find this height out 
     boolean isMoving; 
@@ -33,9 +31,6 @@ public class LinearSlider{
 
     }
     public void moveToPosition(LinearSlider.Position position){
-        PID.setPoint(position.getValue());
-        PID.PID(height);
-        motor.set(PID.getRCW());
     }
 
 
