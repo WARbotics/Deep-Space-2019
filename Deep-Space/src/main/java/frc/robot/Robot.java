@@ -16,11 +16,9 @@ import frc.robot.components.Drivetrain;
 import frc.robot.components.OI;
 import frc.robot.components.Pnumatics;
 import frc.robot.common.ButtonDebouncer;
-import frc.robot.components.Shooter;
 import frc.robot.components.OI.DriveModes;
 import edu.wpi.first.wpilibj.PWMVictorSPX;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
-import frc.robot.common.TurnPID;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import frc.robot.common.MotorRamp;
@@ -50,9 +48,6 @@ public class Robot extends TimedRobot {
   Drivetrain drive;
   OI input;
   Pnumatics beak;  
-  Pnumatics shooterPosition;
-  Shooter ballShooter; 
-  TurnPID driveTurnPID;
   AHRS navXMicro; 
   MotorRamp fowardRamp;
   ButtonDebouncer beakButtonOpen; 
@@ -62,18 +57,14 @@ public class Robot extends TimedRobot {
   PWMVictorSPX shooterWinch;
   PID drivetrainPID;
   double lastestAutoTime;
-  //NetworkTableInstance defaultTableInit; 
-  //NetworkTableInstance visionTableInit;
-  //NetworkTable visionTable;
-  //NetworkTable defaultTable;
+
   PowerDistributionPanel PDP; 
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-  //private final int SHOOTER_UP = 5;
-  //private final int SHOOTER_DOWN = 4;
+
   //Logger logger; 
 
 
