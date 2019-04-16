@@ -85,48 +85,33 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Camera 
     CameraServer.getInstance().startAutomaticCapture();
+
     // Drivetrain
     PWMVictorSPX driveMotorLeft = new PWMVictorSPX(4);
     PWMVictorSPX driveMotorLeft1 = new PWMVictorSPX(3);
     PWMVictorSPX driveMotorRight = new PWMVictorSPX(7);
     PWMVictorSPX driveMotorRight1 = new PWMVictorSPX(6);
-    drivetrainPID = new PID(.125, 0, .03);
-
     drive = new Drivetrain(driveMotorLeft, driveMotorLeft1, driveMotorRight, driveMotorRight1);
     drive.invertRightMotors();
+
+    // Drivetrain PID
+    drivetrainPID = new PID(.1, 0, .01);
+
     //Joysticks 
     Joystick driverStick = new Joystick(0);
     Joystick operatorStick = new Joystick(1);
-    
     input = new OI(driverStick, operatorStick);
+
     // Pnumatics
     DoubleSolenoid beakSolenoid = new DoubleSolenoid(4, 5);
     beak = new Pnumatics(beakSolenoid);
-    //    Shooter
-    PWMVictorSPX leftShooter = new PWMVictorSPX(1);
-    PWMVictorSPX rightShooter = new PWMVictorSPX(5);
-    shooterWinch = new PWMVictorSPX(0);
-
-    ballShooter = new Shooter(leftShooter,rightShooter, .8);
-    
-    
-    // Motion
-    fowardRamp = new MotorRamp(0.001);
 
     // NAV
     /*
     navXMicro = new AHRS(Port.kUSB);
     navXMicro.reset();
     */
-    // DataTables 
-    //  Java side will hold the datatable server becuase it is on the roborio
-    /*
-    defaultTableInit = NetworkTableInstance.getDefault();
-    visionTableInit = NetworkTableInstance.create(); 
-    defaultTable = defaultTableInit.getTable("datatables");
-    visionTable = visionTableInit.getTable("vision");
-    defaultTableInit.startClientTeam(6925);
-    */
+    
     // Debouncer 
     beakButtonOpen = new ButtonDebouncer(input.operator,1, .5);
     beakButtonClose = new ButtonDebouncer(input.operator, 2, .5);
@@ -146,31 +131,11 @@ public class Robot extends TimedRobot {
     //logger = new Logger("dev/U/sda"); // Check this file path
   }
 
-  /**
-   * This function is called every robot packet, no matter the mode. Use this for
-   * items like diagnostics that you want ran during disabled, autonomous,
-   * teleoperated and test.
-   *
-   * <p>
-   * This runs after the mode specific periodic functions, but before LiveWindow
-   * and SmartDashboard integrated updating.
-   */
+
   @Override
   public void robotPeriodic() {
   }
 
-  /**
-   * This autonomous (along with the chooser code above) shows how to select
-   * between different autonomous modes using the dashboard. The sendable chooser
-   * code works with the Java SmartDashboard. If you prefer the LabVIEW Dashboard,
-   * remove all of the chooser code and uncomment the getString line to get the
-   * auto name from the text box below the Gyro
-   *
-   * <p>
-   * You can add additional auto modes by adding additional comparisons to the
-   * switch structure below with additional strings. If using the SendableChooser
-   * make sure to add them to the chooser code above as well.
-   */
   @Override
   public void autonomousInit() {
     m_autoSelected = m_chooser.getSelected();
@@ -207,7 +172,7 @@ public class Robot extends TimedRobot {
     double zRotation = input.driver.getRawAxis(3);
     double rightDriveY = input.driver.getRawAxis(3);
     if(input.driveMode == DriveModes.SPEED){
-      // Speed
+      // Speed drivemode
       if (driveY < .1 && driveY > -.1) {
         driveY = 0;
       }
@@ -216,7 +181,7 @@ public class Robot extends TimedRobot {
       }
       drive.m_Drive.arcadeDrive(driveX*.85, driveY*.85);
     }else if(input.driveMode == DriveModes.PRECISION){
-      // Precision
+      // Precision drivemode
       if(driveY > .4){
         driveY = .4;
       }else if(driveY< -.4){
@@ -236,13 +201,11 @@ public class Robot extends TimedRobot {
       if (driveX < .1 && driveX > -.1) {
         driveX = 0;
       }
-      drivetrainPID.setActual(driveY*.75);
-      System.out.println("PID: "+drivetrainPID.getRate());
-      System.out.println("zRotation: "+ zRotation);
-      drive.m_Drive.curvatureDrive(drivetrainPID.getRate(), -zRotation * .8, false);
+      drivetrainPID.setActual(-driveY * .75);
+      drive.m_Drive.curvatureDrive(drivetrainPID.getRate(), zRotation, false);
     }
-    // Thread this to 200 ms for the speed controller 
 
+    // Buttons for the changing drive modes 
     if (input.driver.getRawButton(1)){
       input.setDriveMode(DriveModes.PRECISION);
     }
@@ -256,34 +219,16 @@ public class Robot extends TimedRobot {
         beak.setFoward();
       }
     }
+    // Beak control
     if (input.operator.getRawButton(2)){
       // Close the beak
       if(beakButtonClose.isReady()){
         //logger.info("Beak is closed");
         beak.setReversed();
       }
-    } 
-    if (input.operator.getRawButton(5)){
-      // Shoot 
-      ballShooter.shooter.set(.25);
-    }else{
-      ballShooter.shooter.set(0);
-    }
-    if (input.operator.getRawButton(3)){
-      ballShooter.shooter.set(-.5);
-      // intake
-    }else{
-      ballShooter.shooter.set(0);
-    }
-
-    if (input.operator.getRawButton(6)) {
-      shooterWinch.set(-.5);
-    } else if (input.operator.getRawButton(4)) {
-      shooterWinch.set(.5);
-    } else {
-      shooterWinch.set(0);
     }
   }
+
   /**
    * This function is called periodically during test mode.
    */
