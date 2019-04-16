@@ -14,11 +14,11 @@ import frc.robot.components.Drivetrain;
 import frc.robot.components.OI;
 import frc.robot.components.Pnumatics;
 import frc.robot.common.ButtonDebouncer;
-import frc.robot.components.Shooter;
+
 import frc.robot.components.OI.DriveModes;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
-import frc.robot.common.TurnPID;
+
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import frc.robot.common.MotorRamp;
@@ -50,7 +50,6 @@ public class Robot extends TimedRobot {
   Drivetrain drive;
   OI input;
   Pnumatics beak;  
-  TurnPID driveTurnPID;
   AHRS navXMicro; 
   MotorRamp fowardRamp;
   ButtonDebouncer beakButtonOpen; 
