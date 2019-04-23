@@ -78,12 +78,12 @@ public class Robot extends TimedRobot {
     CameraServer.getInstance().startAutomaticCapture();
 
     // Drivetrain
-    PWMVictorSPX driveMotorLeft = new PWMVictorSPX(4);
+    PWMVictorSPX driveMotorLeft = new PWMVictorSPX(8);
     PWMVictorSPX driveMotorLeft1 = new PWMVictorSPX(3);
     PWMVictorSPX driveMotorRight = new PWMVictorSPX(7);
     PWMVictorSPX driveMotorRight1 = new PWMVictorSPX(6);
     drive = new Drivetrain(driveMotorLeft, driveMotorLeft1, driveMotorRight, driveMotorRight1);
-    drive.invertRightMotors();
+
 
     // Drivetrain PID
     drivetrainPID = new PID(.1, 0, .01);
@@ -160,7 +160,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     double driveY  = -input.driver.getRawAxis(1);
     double driveX = input.driver.getRawAxis(0);
-    double zRotation = input.driver.getRawAxis(3);
+    double zRotation = input.driver.getRawAxis(2);
     double rightDriveY = input.driver.getRawAxis(3);
     if(input.driveMode == DriveModes.SPEED){
       // Speed drivemode
