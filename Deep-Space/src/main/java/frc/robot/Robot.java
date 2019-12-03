@@ -170,20 +170,29 @@ public class Robot extends TimedRobot {
       if (driveX < .1 && driveX > -.1) {
         driveX = 0;
       }
-      drive.m_Drive.arcadeDrive(driveX*.85, driveY*.85);
-    }else if(input.driveMode == DriveModes.PRECISION){
+      drive.m_Drive.arcadeDrive(driveX*.75, driveY*.75);
+    }else if(input.driveMode == DriveModes.TANK){
       // Precision drivemode
-      if(driveY > .4){
-        driveY = .4;
-      }else if(driveY< -.4){
-        driveY = -.4;
+      if (driveY < .1 && driveY > -.1) {
+        driveY = 0;
       }
-      if(rightDriveY > .4){
-        rightDriveY = .4;
-      }else if(rightDriveY < -.4){
-        rightDriveY = .4;
+      if(rightDriveY < .1 && rightDriveY > -.1){
+        rightDriveY = 0;
       }
-      drive.m_Drive.tankDrive(driveY, rightDriveY);
+      drive.m_Drive.tankDrive(driveY*.75, -rightDriveY*.75);
+    }else if (input.driveMode == DriveModes.PRECISION){
+        // Precision drivemode
+      if (driveY > .4) {
+        driveY = .5;
+      } else if (driveY < -.4) {
+        driveY = -.5;
+      }
+      if (rightDriveY > .4) {
+        rightDriveY = .5;
+      } else if (rightDriveY < -.4) {
+        rightDriveY = .5;
+      }
+      drive.m_Drive.tankDrive(driveY*.75, -rightDriveY*.75);
     }else{
       // Defult drive mode;
       if (driveY < .1 && driveY > -.1) {
@@ -192,8 +201,8 @@ public class Robot extends TimedRobot {
       if (driveX < .1 && driveX > -.1) {
         driveX = 0;
       }
-      drivetrainPID.setActual(-driveY * .75);
-      drive.m_Drive.curvatureDrive(drivetrainPID.getRate(), zRotation, false);
+      drivetrainPID.setActual(-driveY * .45);
+      drive.m_Drive.curvatureDrive(drivetrainPID.getRate()*.85, zRotation, false);
     }
 
     // Buttons for the changing drive modes 

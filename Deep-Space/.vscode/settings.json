@@ -10,5 +10,8 @@
     ".classpath": true,
     ".project": true
   },
-  "wpilib.online": true
+  "wpilib.online": true,
+  "java.home": "/Library/Java/JavaVirtualMachines/jdk-11.0.1.jdk/Contents/Home",
+  "FRC.home": "/Library/Java/JavaVirtualMachines/jdk-11.0.1.jdk/Contents/Home",
+  "wpilib.deployOffline": false,
 }

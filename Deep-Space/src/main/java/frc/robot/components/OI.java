@@ -12,7 +12,7 @@ public class OI{
         this.operator = operator; 
     }
     public enum DriveModes{ 
-        PRECISION, SPEED, DEFAULT;
+        TANK, PRECISION, SPEED, DEFAULT;
     }
     public void setDriveMode(DriveModes mode){ 
         this.driveMode = mode;
