@@ -7,7 +7,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -17,25 +16,13 @@ import frc.robot.components.OI;
 import frc.robot.components.Pnumatics;
 import frc.robot.common.ButtonDebouncer;
 import frc.robot.components.OI.DriveModes;
-import edu.wpi.first.wpilibj.PWMVictorSPX;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.wpilibj.SerialPort.Port;
 import frc.robot.common.MotorRamp;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.cameraserver.CameraServer;
 import frc.robot.common.PID;
-//import frc.robot.common.Logger;
-
-/**
- *  [] Places logger points through out the files
- *  [] Linear slider
- *  [] Auto turn 
- *  [] auto play generator based abstrasct moves 
- *  [] Manual mode 
- *  [] controll modes 
- *  [] Display this data
-*/
+import edu.wpi.first.wpilibj.VictorSP;
+import edu.wpi.first.wpilibj.Spark;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -45,28 +32,28 @@ import frc.robot.common.PID;
  * project.
  **/
 public class Robot extends TimedRobot {
-  Drivetrain drive;
+  //Drivetrain drive;
   OI input;
   Pnumatics beak;  
   AHRS navXMicro; 
   MotorRamp fowardRamp;
-  ButtonDebouncer beakButtonOpen; 
-  ButtonDebouncer beakButtonClose;
-  ButtonDebouncer shootButtton;
-  ButtonDebouncer intakeButton;
-  PWMVictorSPX shooterWinch;
   PID drivetrainPID;
   double lastestAutoTime;
+  VictorSP shooter; 
+  VictorSP shooter1;
+  Spark intake;
+  Drivetrain drive;
+  /*
+  1 VictorSP for intake 
+  1 VictorSP for shooter
 
+
+  */
   PowerDistributionPanel PDP; 
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
-
-
-  //Logger logger; 
-
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -74,41 +61,29 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    // Camera 
-    CameraServer.getInstance().startAutomaticCapture();
-
-    // Drivetrain
-    PWMVictorSPX driveMotorLeft = new PWMVictorSPX(8);
-    PWMVictorSPX driveMotorLeft1 = new PWMVictorSPX(3);
-    PWMVictorSPX driveMotorRight = new PWMVictorSPX(7);
-    PWMVictorSPX driveMotorRight1 = new PWMVictorSPX(6);
-    drive = new Drivetrain(driveMotorLeft, driveMotorLeft1, driveMotorRight, driveMotorRight1);
-
-
-    // Drivetrain PID
-    drivetrainPID = new PID(.1, 0, .01);
-
+    // Drivetrain 
+  
+    VictorSP leftFront = new VictorSP(1);
+    VictorSP rightFront = new VictorSP(2);
+    VictorSP leftRear = new VictorSP(3);
+    VictorSP rightRear = new VictorSP(4);
+    drive = new Drivetrain(leftFront, leftRear, rightFront, rightRear);
+  
+    //shooter 
+    shooter = new VictorSP(3);
+    shooter1 = new VictorSP(2);
+    //intake 
+    intake = new Spark(1);
     //Joysticks 
     Joystick driverStick = new Joystick(0);
     Joystick operatorStick = new Joystick(1);
     input = new OI(driverStick, operatorStick);
 
-    // Pnumatics
-    DoubleSolenoid beakSolenoid = new DoubleSolenoid(4, 5);
-    beak = new Pnumatics(beakSolenoid);
-
-    // NAV
     /*
     navXMicro = new AHRS(Port.kUSB);
     navXMicro.reset();
     */
-    
-    // Debouncer 
-    beakButtonOpen = new ButtonDebouncer(input.operator,1, .5);
-    beakButtonClose = new ButtonDebouncer(input.operator, 2, .5);
-    shootButtton = new ButtonDebouncer(input.operator, 5, .3);
-    intakeButton = new ButtonDebouncer(input.operator, 6, .3);
-    // PDP
+
     /*
     PDP = new PowerDistributionPanel(0);
     PDP.clearStickyFaults();
@@ -162,6 +137,7 @@ public class Robot extends TimedRobot {
     double driveX = input.driver.getRawAxis(0);
     double zRotation = input.driver.getRawAxis(2);
     double rightDriveY = input.driver.getRawAxis(3);
+    
     if(input.driveMode == DriveModes.SPEED){
       // Speed drivemode
       if (driveY < .1 && driveY > -.1) {
@@ -212,21 +188,23 @@ public class Robot extends TimedRobot {
     if (input.driver.getRawButton(2)){
       input.setDriveMode(DriveModes.DEFAULT);
     }
-    if (input.operator.getRawButton(1)){
-      // Opens the beak
-      if(beakButtonOpen.isReady()){
-        //logger.info("Beak is open");
-        beak.setFoward();
-      }
+    
+    if(input.operator.getRawButton(1)){
+      shooter.set(-1);
+    }else{
+      shooter.set(0);
     }
-    // Beak control
-    if (input.operator.getRawButton(2)){
-      // Close the beak
-      if(beakButtonClose.isReady()){
-        //logger.info("Beak is closed");
-        beak.setReversed();
-      }
+    if(input.operator.getRawButton(3)){
+      shooter1.set(1);
+    }else{
+      shooter1.set(0);
     }
+    if(input.operator.getRawButton(2)){
+      intake.set(-1);
+    }else{
+      intake.set(0);
+    }
+
   }
 
   /**

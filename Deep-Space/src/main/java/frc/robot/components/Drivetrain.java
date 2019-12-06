@@ -1,7 +1,7 @@
 package frc.robot.components;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive; 
-import edu.wpi.first.wpilibj.PWMVictorSPX;
+import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import java.util.HashMap;
 
@@ -9,18 +9,18 @@ public class Drivetrain {
     /**
      *  A hight object of the drivetrain
      */
-    public PWMVictorSPX leftMotor;
-    public PWMVictorSPX leftMotor1;
-    public PWMVictorSPX rightMotor;
-    public PWMVictorSPX rightMotor1;
-    PWMVictorSPX[] motors = {leftMotor, leftMotor1, rightMotor, rightMotor1};
-    HashMap <PWMVictorSPX, Boolean> motorStatus = new HashMap<>();
+    private VictorSP leftMotor;
+    private VictorSP leftMotor1;
+    private VictorSP rightMotor;
+    private VictorSP rightMotor1;
+    VictorSP[] motors = {leftMotor, leftMotor1, rightMotor, rightMotor1};
+    HashMap <VictorSP, Boolean> motorStatus = new HashMap<>();
     public SpeedControllerGroup m_Right;
     public SpeedControllerGroup m_Left;
     public DifferentialDrive m_Drive;
     
 
-    public Drivetrain(PWMVictorSPX leftMotor, PWMVictorSPX leftMotor1, PWMVictorSPX rightMotor, PWMVictorSPX rightMotor1){
+    public Drivetrain(VictorSP leftMotor, VictorSP leftMotor1, VictorSP rightMotor, VictorSP rightMotor1){
         this.leftMotor = leftMotor; 
         this.leftMotor1 = leftMotor1;
         this.rightMotor = rightMotor;
@@ -31,12 +31,12 @@ public class Drivetrain {
     }
 
     private void setMotorStatus(){
-        for(PWMVictorSPX motor : motors){
+        for(VictorSP motor : motors){
             motorStatus.put(motor ,motor.isAlive());
         }
     }
 
-    public HashMap<PWMVictorSPX, Boolean> getMotorStatus(){
+    public HashMap<VictorSP, Boolean> getMotorStatus(){
         setMotorStatus();
         return motorStatus; 
     }
