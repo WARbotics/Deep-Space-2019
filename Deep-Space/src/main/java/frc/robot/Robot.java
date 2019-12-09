@@ -40,7 +40,7 @@ public class Robot extends TimedRobot {
   PID drivetrainPID;
   double lastestAutoTime;
   VictorSP shooter; 
-  VictorSP shooter1;
+  Spark shooter1;
   Spark intake;
   Drivetrain drive;
   /*
@@ -63,7 +63,7 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Drivetrain 
   
-    VictorSP leftFront = new VictorSP(1);
+    Spark leftFront = new Spark(1);
     VictorSP rightFront = new VictorSP(2);
     VictorSP leftRear = new VictorSP(3);
     VictorSP rightRear = new VictorSP(4);
@@ -71,7 +71,7 @@ public class Robot extends TimedRobot {
   
     //shooter 
     shooter = new VictorSP(3);
-    shooter1 = new VictorSP(2);
+    shooter1 = new Spark(2);
     //intake 
     intake = new Spark(1);
     //Joysticks 
