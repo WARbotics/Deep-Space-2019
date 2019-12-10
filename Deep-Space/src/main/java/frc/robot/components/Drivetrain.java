@@ -10,18 +10,18 @@ public class Drivetrain {
     /**
      *  A hight object of the drivetrain
      */
-    private Spark leftMotor;
+    private VictorSP leftMotor;
     private VictorSP leftMotor1;
-    private VictorSP rightMotor;
+    private Spark rightMotor;
     private VictorSP rightMotor1;
     //VictorSP[] motors = {leftMotor, leftMotor1, rightMotor, rightMotor1};
-    HashMap <VictorSP, Boolean> motorStatus = new HashMap<>();
+    //HashMap <VictorSP, Boolean> motorStatus = new HashMap<>();
     public SpeedControllerGroup m_Right;
     public SpeedControllerGroup m_Left;
     public DifferentialDrive m_Drive;
     
 
-    public Drivetrain(Spark leftMotor, VictorSP leftMotor1, VictorSP rightMotor, VictorSP rightMotor1){
+    public Drivetrain(VictorSP leftMotor, VictorSP leftMotor1, Spark rightMotor, VictorSP rightMotor1){
         this.leftMotor = leftMotor; 
         this.leftMotor1 = leftMotor1;
         this.rightMotor = rightMotor;

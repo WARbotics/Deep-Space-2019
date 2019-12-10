@@ -39,10 +39,11 @@ public class Robot extends TimedRobot {
   MotorRamp fowardRamp;
   PID drivetrainPID;
   double lastestAutoTime;
-  VictorSP shooter; 
+  Spark shooter; 
   Spark shooter1;
-  Spark intake;
+  VictorSP intake;
   Drivetrain drive;
+  Joystick operatorStick;
   /*
   1 VictorSP for intake 
   1 VictorSP for shooter
@@ -63,21 +64,21 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Drivetrain 
   
-    Spark leftFront = new Spark(1);
-    VictorSP rightFront = new VictorSP(2);
-    VictorSP leftRear = new VictorSP(3);
-    VictorSP rightRear = new VictorSP(4);
+    Spark rightFront = new Spark(2);
+    VictorSP leftFront = new VictorSP(0);
+    VictorSP leftRear = new VictorSP(1);
+    VictorSP rightRear = new VictorSP(3);
     drive = new Drivetrain(leftFront, leftRear, rightFront, rightRear);
   
     //shooter 
-    shooter = new VictorSP(3);
-    shooter1 = new Spark(2);
+    shooter = new Spark(4);
+    shooter1 = new Spark(5);
     //intake 
-    intake = new Spark(1);
+    intake = new VictorSP(6);
     //Joysticks 
-    Joystick driverStick = new Joystick(0);
+    //Joystick driverStick = new Joystick(0);
     Joystick operatorStick = new Joystick(1);
-    input = new OI(driverStick, operatorStick);
+    //input = new OI(driverStick, operatorStick);
 
     /*
     navXMicro = new AHRS(Port.kUSB);
@@ -133,6 +134,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    /*
     double driveY  = -input.driver.getRawAxis(1);
     double driveX = input.driver.getRawAxis(0);
     double zRotation = input.driver.getRawAxis(2);
@@ -180,7 +182,7 @@ public class Robot extends TimedRobot {
       drivetrainPID.setActual(-driveY * .45);
       drive.m_Drive.curvatureDrive(drivetrainPID.getRate()*.85, zRotation, false);
     }
-
+    */
     // Buttons for the changing drive modes 
     if (input.driver.getRawButton(1)){
       input.setDriveMode(DriveModes.PRECISION);
@@ -189,17 +191,17 @@ public class Robot extends TimedRobot {
       input.setDriveMode(DriveModes.DEFAULT);
     }
     
-    if(input.operator.getRawButton(1)){
+    if(operatorStick.getRawButton(1)){
       shooter.set(-1);
     }else{
       shooter.set(0);
     }
-    if(input.operator.getRawButton(3)){
+    if(operatorStick.getRawButton(3)){
       shooter1.set(1);
     }else{
       shooter1.set(0);
     }
-    if(input.operator.getRawButton(2)){
+    if(operatorStick.getRawButton(2)){
       intake.set(-1);
     }else{
       intake.set(0);
